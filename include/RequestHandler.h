@@ -24,7 +24,7 @@ class MyRequestHandler : public HTTPRequestHandler
 
             ostream& out = resp.send();
             out << "<h1>Hello world!</h1>"
-                << "<p>Count: "  << ++count         << "</p>"
+                << "<p>Request Count: " << ++count  << "</p>"
                 << "<p>Host: "   << req.getHost()   << "</p>"
                 << "<p>Method: " << req.getMethod() << "</p>"
                 << "<p>URI: "    << req.getURI()    << "</p>";
