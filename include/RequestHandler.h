@@ -53,8 +53,15 @@ class MyRequestHandlerFactory : public HTTPRequestHandlerFactory
 class MyServerApp : public ServerApplication
 {
     protected:
-        int main(const vector<string> &)
+        int main(const vector<string> & xs)
         {
+            if (xs.size() > 0 ) {
+                cout << "Firing up server with inputs: ";
+                for (auto const & x : xs) {
+                    cout << x << "; ";
+                }
+                cout << endl;
+            }
 
             HTTPServer s(new MyRequestHandlerFactory, ServerSocket(8080), new HTTPServerParams);
 
