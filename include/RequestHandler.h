@@ -16,55 +16,56 @@ using namespace std;
 
 class MyRequestHandler : public HTTPRequestHandler
 {
-public:
-  virtual void handleRequest(HTTPServerRequest &req, HTTPServerResponse &resp)
-  {
-    resp.setStatus(HTTPResponse::HTTP_OK);
-    resp.setContentType("text/html");
+    public:
+        virtual void handleRequest(HTTPServerRequest &req, HTTPServerResponse &resp)
+        {
+            resp.setStatus(HTTPResponse::HTTP_OK);
+            resp.setContentType("text/html");
 
-    ostream& out = resp.send();
-    out << "<h1>Hello world!</h1>"
-        << "<p>Count: "  << ++count         << "</p>"
-        << "<p>Host: "   << req.getHost()   << "</p>"
-        << "<p>Method: " << req.getMethod() << "</p>"
-        << "<p>URI: "    << req.getURI()    << "</p>";
-    out.flush();
+            ostream& out = resp.send();
+            out << "<h1>Hello world!</h1>"
+                << "<p>Count: "  << ++count         << "</p>"
+                << "<p>Host: "   << req.getHost()   << "</p>"
+                << "<p>Method: " << req.getMethod() << "</p>"
+                << "<p>URI: "    << req.getURI()    << "</p>";
+            out.flush();
 
-    cout << endl
-         << "Response sent for count=" << count
-         << " and URI=" << req.getURI() << endl;
-  }
+            cout << endl
+                << "Response sent for count=" << count
+                << " and URI=" << req.getURI() << endl;
+        }
 
-private:
-  static int count;
+    private:
+        static int count;
 };
 
 int MyRequestHandler::count = 0;
 
 class MyRequestHandlerFactory : public HTTPRequestHandlerFactory
 {
-public:
-  virtual HTTPRequestHandler* createRequestHandler(const HTTPServerRequest &)
-  {
-    return new MyRequestHandler;
-  }
+    public:
+        virtual HTTPRequestHandler* createRequestHandler(const HTTPServerRequest &)
+        {
+            return new MyRequestHandler;
+        }
 };
 
 class MyServerApp : public ServerApplication
 {
-protected:
-  int main(const vector<string> &)
-  {
-    HTTPServer s(new MyRequestHandlerFactory, ServerSocket(8080), new HTTPServerParams);
+    protected:
+        int main(const vector<string> &)
+        {
 
-    s.start();
-    cout << endl << "Server started" << endl;
+            HTTPServer s(new MyRequestHandlerFactory, ServerSocket(8080), new HTTPServerParams);
 
-    waitForTerminationRequest();  // wait for CTRL-C or kill
+            s.start();
+            cout << endl << "Server started" << endl;
 
-    cout << endl << "Shutting down..." << endl;
-    s.stop();
+            waitForTerminationRequest();  // wait for CTRL-C or kill
 
-    return Application::EXIT_OK;
-  }
+            cout << endl << "Shutting down..." << endl;
+            s.stop();
+
+            return Application::EXIT_OK;
+        }
 };
