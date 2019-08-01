@@ -55,7 +55,7 @@ class MyServerApp : public ServerApplication
 protected:
   int main(const vector<string> &)
   {
-    HTTPServer s(new MyRequestHandlerFactory, ServerSocket(9090), new HTTPServerParams);
+    HTTPServer s(new MyRequestHandlerFactory, ServerSocket(8080), new HTTPServerParams);
 
     s.start();
     cout << endl << "Server started" << endl;
