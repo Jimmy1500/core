@@ -136,7 +136,6 @@ class MyRequestHandler : public HTTPRequestHandler
                 << "<body>"
                 << "	<header id=\"header\"><p>Hello world!</p></header>"
                 << "	<div id=\"container\">"
-                << ""
                 << "		<main id=\"center\" class=\"column\">"
                 << "			<article>"
                 << "				<h1>Method: HTTP " << req.getMethod() << " : " << req.getHost() << "</h1>"
