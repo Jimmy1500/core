@@ -2,7 +2,8 @@
 
 using namespace std;
 
-int main () {
-    cout << "main - TO BE IMPLMENTED" << endl;
-    return 0;
+int main(int argc, char* argv [])
+{
+    MyServerApp app;
+    return app.run(argc, argv);
 }
