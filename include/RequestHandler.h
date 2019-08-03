@@ -87,13 +87,13 @@ class ServerApp : public ServerApplication
             ServerSocket socket(8080);
             HTTPServer server(new RequestHandlerFactory, socket, new HTTPServerParams);
 
-            s.start();
+            server.start();
             cout << "Server started" << endl;
 
             waitForTerminationRequest();  // wait for CTRL-C or kill
 
             cout << "Shutting down..." << endl;
-            s.stop();
+            server.stop();
 
             return Application::EXIT_OK;
         }
