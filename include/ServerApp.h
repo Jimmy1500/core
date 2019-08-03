@@ -23,12 +23,13 @@ class ServerApp : public ServerApplication
 
         int main(const vector<string> & inputs) {
             if (inputs.size() > 0) {
-                cout << "Firing up server with inputs: ";
+                cout << "Starting server with inputs: ";
                 for (auto const & input : inputs) { cout << input << "; "; }
                 cout << endl;
             }
 
             size_t port = config().getInt("server.port", 8080); // default = 8080
+
             ServerSocket socket(port);
             HTTPServer server(new RequestHandlerFactory, socket, new HTTPServerParams);
 
