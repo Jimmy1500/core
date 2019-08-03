@@ -20,19 +20,25 @@ class Repository {
         static size_t repositoryMask;
     public:
         Repository() {
-            Poco::Data::MySQL::Connector::registerConnector(); ++repositoryCount;
+            Poco::Data::MySQL::Connector::registerConnector();
+            ++repositoryCount;
             cout << MySQL::Connector::KEY << " connector # " << repositoryCount << " registered!" << endl;
         }
 
         ~Repository() {
-            Poco::Data::MySQL::Connector::unregisterConnector(); --repositoryCount;
+            Poco::Data::MySQL::Connector::unregisterConnector();
             cout << MySQL::Connector::KEY << " connector # " << repositoryCount << " unregistered!" << endl;
+            --repositoryCount;
         }
 
-        static inline void PowerOn(string& connector, string& connectionString,
+        static inline size_t existsPool() {
+            return BIN::IsDirty(repositoryMask, SYS::DB_SESS_POOL);
+        }
+
+        static inline void init(string& connector, string& connectionString,
                 size_t minSessions, size_t maxSessions, size_t idleTime)
         {
-            if (!BIN::IsDirty(repositoryMask, SYS::DB_SESS_POOL)) {
+            if (!existsPool()) {
                 repositoryPool = make_unique<SessionPool>(
                         connector, connectionString, minSessions, maxSessions, idleTime);
                 BIN::MarkDirty(repositoryMask, SYS::DB_SESS_POOL);
@@ -40,8 +46,8 @@ class Repository {
             cout << "Database session pool created!" << endl;
         }
 
-        static inline void PowerOff() {
-            if (BIN::IsDirty(repositoryMask, SYS::DB_SESS_POOL)) {
+        static inline void reset() {
+            if (existsPool()) {
                 repositoryPool.reset();
                 BIN::ClearDirty(repositoryMask, SYS::DB_SESS_POOL);
             }
@@ -62,4 +68,5 @@ class Repository {
 
 unique_ptr<SessionPool> Repository::repositoryPool = nullptr;
 size_t Repository::repositoryCount = 0;
+size_t Repository::repositoryMask = 0;
 #endif
