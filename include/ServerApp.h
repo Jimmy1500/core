@@ -6,19 +6,16 @@
 class ServerApp : public ServerApplication
 {
     protected:
-        void initialize(Application& self)
-        {
+        void initialize(Application& self) {
             loadConfiguration("../application.properties");
             ServerApplication::initialize(self);
         }
 
-        void uninitialize()
-        {
+        void uninitialize() {
             ServerApplication::uninitialize();
         }
 
-        int main(const vector<string> & inputs)
-        {
+        int main(const vector<string> & inputs) {
             if (inputs.size() > 0) {
                 cout << "Firing up server with inputs: ";
                 for (auto const & input : inputs) { cout << input << "; "; }

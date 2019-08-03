@@ -6,8 +6,7 @@
 class RequestHandlerFactory : public HTTPRequestHandlerFactory
 {
     public:
-        virtual HTTPRequestHandler* createRequestHandler(const HTTPServerRequest &)
-        {
+        virtual HTTPRequestHandler* createRequestHandler(const HTTPServerRequest &) {
             return new RequestHandler;
         }
 };
