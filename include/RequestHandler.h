@@ -15,19 +15,22 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <thread>
+#include <mutex>
 
 using namespace Poco::Net;
 using namespace Poco::Util;
 using namespace Poco::JSON;
 using namespace std;
 
+static mutex mtx;
 class RequestHandler : public HTTPRequestHandler {
     private:
         static size_t count;
 
     public:
         RequestHandler() : HTTPRequestHandler() {
-            ++count;
+            mtx.lock(); ++count; mtx.unlock();
         }
 
         virtual void handleRequest(HTTPServerRequest &request, HTTPServerResponse &response) {
@@ -55,7 +58,7 @@ class RequestHandler : public HTTPRequestHandler {
             obj->stringify(out);
             out.flush();
 
-            cout << "Response sent for URI=" << request.getURI() << endl;
+            cout << "Response # " << count << " sent for URI=" << request.getURI() << endl;
         }
 };
 
