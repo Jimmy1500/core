@@ -35,6 +35,25 @@ using namespace Poco::Data;
 using namespace std;
 
 static mutex mtx;
+
+namespace HTTP {
+    enum Method {
+        GET = 0,
+        POST,
+        PUT,
+        DELETE,
+        PATCH
+    };
+
+    static map<string, Method> Methods = {
+        {"GET",     GET},
+        {"POST",    POST},
+        {"PUT",     PUT},
+        {"PATCH",   PATCH},
+        {"DELETE",  DELETE}
+    };
+}
+
 class RequestHandler : public HTTPRequestHandler {
     private:
         static size_t count;
@@ -45,12 +64,26 @@ class RequestHandler : public HTTPRequestHandler {
         }
 
         virtual void handleRequest(HTTPServerRequest &request, HTTPServerResponse &response) {
-            if (request.getMethod() == "GET") {
-                handleGet(request, response);
-            } else if (request.getMethod() == "POST") {
-            } else if (request.getMethod() == "PUT") {
-            } else if (request.getMethod() == "DELETE") {
-            } else if (request.getMethod() == "PATCH") {
+            const string method = request.getMethod();
+            switch (HTTP::Methods[method]) {
+                case HTTP::GET:
+                    handleGet(request, response);
+                    break;
+                case HTTP::POST:
+                    handlePost(request, response);
+                    break;
+                case HTTP::PUT:
+                    handlePut(request, response);
+                    break;
+                case HTTP::PATCH:
+                    handlePatch(request, response);
+                    break;
+                case HTTP::DELETE:
+                    handleDelete(request, response);
+                    break;
+                default:
+                    break;
+
             }
         }
 
@@ -59,8 +92,7 @@ class RequestHandler : public HTTPRequestHandler {
             response.setContentType("application/json");
 
             ostream& out = response.send();
-            // smart pointer, so don't worry about cleaning up
-            Poco::JSON::Object::Ptr obj = new Poco::JSON::Object;
+            Poco::JSON::Object::Ptr obj = new Poco::JSON::Object; // smart ptr (auto GC)
             obj->set("host", request.getHost());
             obj->set("uri", request.getURI());
             obj->set("method", request.getMethod());
@@ -69,6 +101,38 @@ class RequestHandler : public HTTPRequestHandler {
             obj->stringify(out);
             out.flush();
 
+            cout << "Response # " << count << " sent for URI=" << request.getURI() << endl;
+        }
+
+        virtual void handlePost(HTTPServerRequest &request, HTTPServerResponse &response) {
+            response.setStatus(HTTPResponse::HTTP_OK);
+            ostream& out = response.send();
+            out << "Post: Not Implemented";
+            out.flush();
+            cout << "Response # " << count << " sent for URI=" << request.getURI() << endl;
+        }
+
+        virtual void handlePut(HTTPServerRequest &request, HTTPServerResponse &response) {
+            response.setStatus(HTTPResponse::HTTP_OK);
+            ostream& out = response.send();
+            out << "Put: Not Implemented";
+            out.flush();
+            cout << "Response # " << count << " sent for URI=" << request.getURI() << endl;
+        }
+
+        virtual void handlePatch(HTTPServerRequest &request, HTTPServerResponse &response) {
+            response.setStatus(HTTPResponse::HTTP_OK);
+            ostream& out = response.send();
+            out << "PATCH: Not Implemented";
+            out.flush();
+            cout << "Response # " << count << " sent for URI=" << request.getURI() << endl;
+        }
+
+        virtual void handleDelete(HTTPServerRequest &request, HTTPServerResponse &response) {
+            response.setStatus(HTTPResponse::HTTP_OK);
+            ostream& out = response.send();
+            out << "Delete: Not Implemented";
+            out.flush();
             cout << "Response # " << count << " sent for URI=" << request.getURI() << endl;
         }
 };
