@@ -29,7 +29,6 @@ class ServerApp : public ServerApplication
             }
 
             size_t server_port = config().getInt("server.port", 8080); // default = 8080
-
             ServerSocket socket(server_port);
             HTTPServer server(new RequestHandlerFactory, socket, new HTTPServerParams);
 
