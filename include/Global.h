@@ -20,8 +20,8 @@ namespace HTTP {
 
     static std::map<std::string, Method> Methods ({
         {"GET",     GET},
-        {"POST",    POST},
         {"PUT",     PUT},
+        {"POST",    POST},
         {"PATCH",   PATCH},
         {"DELETE",  DELETE}
     });

@@ -1,6 +1,11 @@
 #ifndef REQUEST_HANDLER_H
 #define REQUEST_HANDLER_H
 
+#include <Poco/JSON/JSON.h>
+#include <Poco/JSON/Object.h>
+#include <Poco/JSON/Stringifier.h>
+#include <Poco/Dynamic/Var.h>
+
 #include <Poco/Net/ServerSocket.h>
 #include <Poco/Net/HTTPServer.h>
 #include <Poco/Net/HTTPRequestHandler.h>
@@ -32,11 +37,11 @@ class RequestHandler : public HTTPRequestHandler {
                 case HTTP::GET:
                     handleGet(request, response);
                     break;
-                case HTTP::POST:
-                    handlePost(request, response);
-                    break;
                 case HTTP::PUT:
                     handlePut(request, response);
+                    break;
+                case HTTP::POST:
+                    handlePost(request, response);
                     break;
                 case HTTP::PATCH:
                     handlePatch(request, response);
@@ -67,18 +72,18 @@ class RequestHandler : public HTTPRequestHandler {
             cout << "Response # " << count << " sent for URI=" << request.getURI() << endl;
         }
 
-        virtual void handlePost(HTTPServerRequest &request, HTTPServerResponse &response) {
-            response.setStatus(HTTPResponse::HTTP_OK);
-            ostream& out = response.send();
-            out << "Post: Not Implemented";
-            out.flush();
-            cout << "Response # " << count << " sent for URI=" << request.getURI() << endl;
-        }
-
         virtual void handlePut(HTTPServerRequest &request, HTTPServerResponse &response) {
             response.setStatus(HTTPResponse::HTTP_OK);
             ostream& out = response.send();
             out << "Put: Not Implemented";
+            out.flush();
+            cout << "Response # " << count << " sent for URI=" << request.getURI() << endl;
+        }
+
+        virtual void handlePost(HTTPServerRequest &request, HTTPServerResponse &response) {
+            response.setStatus(HTTPResponse::HTTP_OK);
+            ostream& out = response.send();
+            out << "Post: Not Implemented";
             out.flush();
             cout << "Response # " << count << " sent for URI=" << request.getURI() << endl;
         }
