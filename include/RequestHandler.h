@@ -1,3 +1,8 @@
+#include <Poco/JSON/JSON.h>
+#include <Poco/JSON/Object.h>
+#include <Poco/JSON/Stringifier.h>
+#include <Poco/Dynamic/Var.h>
+
 #include <Poco/Net/ServerSocket.h>
 #include <Poco/Net/HTTPServer.h>
 #include <Poco/Net/HTTPRequestHandler.h>
@@ -6,78 +11,86 @@
 #include <Poco/Net/HTTPServerRequest.h>
 #include <Poco/Net/HTTPServerResponse.h>
 #include <Poco/Util/ServerApplication.h>
+
 #include <iostream>
 #include <string>
 #include <vector>
 
 using namespace Poco::Net;
 using namespace Poco::Util;
+using namespace Poco::JSON;
 using namespace std;
 
-class MyRequestHandler : public HTTPRequestHandler
-{
+class RequestHandler : public HTTPRequestHandler {
+    private:
+        static size_t count;
+
     public:
-        virtual void handleRequest(HTTPServerRequest &req, HTTPServerResponse &resp)
-        {
-            resp.setStatus(HTTPResponse::HTTP_OK);
-            resp.setContentType("text/html");
-
-            ostream& out = resp.send();
-            out << "<html>"
-                << "<body>"
-                << "<header id=\"header\">"
-                << "<p>Hello world!</p>"
-                << "<p>Request Count: " << ++count  << "</p>"
-                << "<p>Host: "   << req.getHost()   << "</p>"
-                << "<p>Method: " << req.getMethod() << "</p>"
-                << "<p>URI: "    << req.getURI()    << "</p>"
-                << "</header>"
-                << "<body>"
-                << "<html>";
-                
-            out.flush();
-
-            cout << endl
-                << "Response sent for count=" << count
-                << " and URI=" << req.getURI() << endl;
+        RequestHandler() : HTTPRequestHandler() {
+            ++count;
         }
 
-    private:
-        static int count;
+        virtual void handleRequest(HTTPServerRequest &request, HTTPServerResponse &response) {
+            if (request.getMethod() == "GET") {
+                handleGet(request, response);
+            } else if (request.getMethod() == "POST") {
+            } else if (request.getMethod() == "PUT") {
+            } else if (request.getMethod() == "DELETE") {
+            } else if (request.getMethod() == "PATCH") {
+            }
+        }
+
+        virtual void handleGet(HTTPServerRequest &request, HTTPServerResponse &response) {
+            response.setStatus(HTTPResponse::HTTP_OK);
+            response.setContentType("application/json");
+
+            ostream& out = response.send();
+            // smart pointer, so don't worry about cleaning up
+            Poco::JSON::Object::Ptr obj = new Poco::JSON::Object;
+            obj->set("host", request.getHost());
+            obj->set("uri", request.getURI());
+            obj->set("method", request.getMethod());
+            obj->set("count", count);
+            obj->set("message", "hello world!");
+            obj->stringify(out);
+            out.flush();
+
+            cout << "Response sent for URI=" << request.getURI() << endl;
+        }
 };
 
-int MyRequestHandler::count = 0;
+size_t RequestHandler::count = 0;
 
-class MyRequestHandlerFactory : public HTTPRequestHandlerFactory
+class RequestHandlerFactory : public HTTPRequestHandlerFactory
 {
     public:
         virtual HTTPRequestHandler* createRequestHandler(const HTTPServerRequest &)
         {
-            return new MyRequestHandler;
+            return new RequestHandler;
         }
 };
 
-class MyServerApp : public ServerApplication
+class ServerApp : public ServerApplication
 {
     protected:
-        int main(const vector<string> & xs)
+        int main(const vector<string> & inputs)
         {
-            if (xs.size() > 0 ) {
+            if (inputs.size() > 0) {
                 cout << "Firing up server with inputs: ";
-                for (auto const & x : xs) {
-                    cout << x << "; ";
+                for (auto const & input : inputs) {
+                    cout << input << "; ";
                 }
                 cout << endl;
             }
 
-            HTTPServer s(new MyRequestHandlerFactory, ServerSocket(8080), new HTTPServerParams);
+            HTTPServer s(new RequestHandlerFactory, ServerSocket(8080), new HTTPServerParams);
 
             s.start();
-            cout << endl << "Server started" << endl;
+            cout << "Server started" << endl;
 
             waitForTerminationRequest();  // wait for CTRL-C or kill
 
-            cout << endl << "Shutting down..." << endl;
+            cout << "Shutting down..." << endl;
             s.stop();
 
             return Application::EXIT_OK;
