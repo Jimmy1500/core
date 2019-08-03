@@ -1,8 +1,3 @@
-#include <Poco/JSON/JSON.h>
-#include <Poco/JSON/Object.h>
-#include <Poco/JSON/Stringifier.h>
-#include <Poco/Dynamic/Var.h>
-
 #include <Poco/Net/ServerSocket.h>
 #include <Poco/Net/HTTPServer.h>
 #include <Poco/Net/HTTPRequestHandler.h>
@@ -11,6 +6,18 @@
 #include <Poco/Net/HTTPServerRequest.h>
 #include <Poco/Net/HTTPServerResponse.h>
 #include <Poco/Util/ServerApplication.h>
+
+#include <Poco/JSON/JSON.h>
+#include <Poco/JSON/Object.h>
+#include <Poco/JSON/Stringifier.h>
+#include <Poco/Dynamic/Var.h>
+
+#include <Poco/Data/Time.h>
+#include <Poco/Data/MySQL/Connector.h>
+#include <Poco/Data/Session.h>
+#include <Poco/Data/SessionPool.h>
+#include <Poco/Data/SessionFactory.h>
+#include <Poco/Data/MySQL/MySQLException.h>
 
 #include <iostream>
 #include <string>
@@ -21,6 +28,7 @@
 using namespace Poco::Net;
 using namespace Poco::Util;
 using namespace Poco::JSON;
+using namespace Poco::Data;
 using namespace std;
 
 static mutex mtx;
