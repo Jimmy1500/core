@@ -45,7 +45,7 @@ namespace HTTP {
         PATCH
     };
 
-    static map<string, Method> Methods = {
+    static std::map<string, Method> Methods = {
         {"GET",     GET},
         {"POST",    POST},
         {"PUT",     PUT},
