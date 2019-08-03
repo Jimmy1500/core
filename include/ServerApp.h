@@ -29,18 +29,24 @@ class ServerApp : public ServerApplication
             }
 
             if (!Repository::existsPool()) {
-                string connectionString = "host=";
-                string user(getenv("DB_USERNAME"));
-                string password(getenv("DB_PASSWORD"));
-                string db(getenv("DB_DATABASE"));
+                string port( config().getString("database.port", "3306") );
+                string db(getenv( config().getString("database.name", "DB_DATABASE").c_str() ));
+                string user(getenv( config().getString("database.username", "DB_USERNAME").c_str() ));
+                string password(getenv( config().getString("database.password", "DB_PASSWORD").c_str() ));
 
-                string host="127.0.0.1";
-                string port = config().getString("database.port", "3306"); // default port = 3306
-                string compress="true", autoReconnect="true";
-                connectionString.append(host + ";user=" + user + ";password=" + password + ";db=" + db + ";port=" + port + ";compress=" + compress + ";auto-reconnect=" + autoReconnect + ";");
+                string host="127.0.0.1", compress="true", autoReconnect="true";
+                string connectionString(
+                        "host=" + host +
+                        ";user=" + user +
+                        ";password=" + password +
+                        ";db=" + db +
+                        ";port=" + port +
+                        ";compress=" + compress +
+                        ";auto-reconnect=" + autoReconnect + ";");
 
                 size_t minSessions = 1, maxSessions = 32, idleTime = 60;
-                Repository::init(Poco::Data::MySQL::Connector::KEY, connectionString, minSessions, maxSessions, idleTime);
+                Repository::init(Poco::Data::MySQL::Connector::KEY,
+                        connectionString, minSessions, maxSessions, idleTime);
             }
 
             size_t serverPort = config().getInt("server.port", 8080); // default port = 8080
