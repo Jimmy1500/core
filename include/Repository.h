@@ -43,7 +43,7 @@ class Repository {
                         connector, connectionString, minSessions, maxSessions, idleTime);
                 BIN::MarkDirty(repositoryMask, SYS::DB_SESS_POOL);
             }
-            cout << "Database session pool created!" << endl;
+            cout << "### Database session pool created!" << endl;
         }
 
         static inline void reset() {
@@ -51,10 +51,10 @@ class Repository {
                 repositoryPool.reset();
                 BIN::ClearDirty(repositoryMask, SYS::DB_SESS_POOL);
             }
-            cout << "Database session pool destroyed!" << endl;
+            cout << "### Database session pool destroyed!" << endl;
         }
 
-        void PopById(int id, DAO::Tenant & tenant) {
+        void popById(int id, DAO::Tenant & tenant) {
             Session session(repositoryPool->get());
             Poco::Data::Statement select(session);
             select << "SELECT * FROM tenant WHERE tenant_id = ?",
@@ -62,6 +62,7 @@ class Repository {
                    Keywords::into(tenant.id),
                    Keywords::into(tenant.name),
                    Keywords::now;
+            cout<< tenant.id << ", " << tenant.name << endl;
         }
 
 };

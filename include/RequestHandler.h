@@ -51,7 +51,7 @@ class RequestHandler : public HTTPRequestHandler {
                     ostream& out = response.send();
                     out << method << " : Not Implemented";
                     out.flush();
-                    cout << "Response # " << requestHandlerCount << " sent for URI=" << request.getURI() << endl;
+                    cout << "### Response # " << requestHandlerCount << " sent for URI=" << request.getURI() << endl;
                     break;
 
             }
@@ -61,6 +61,7 @@ class RequestHandler : public HTTPRequestHandler {
             response.setStatus(HTTPResponse::HTTP_OK);
             response.setContentType("application/json");
 
+            // DAO::Tenant tenant; db->popById(1, tenant);
             ostream& out = response.send();
             Poco::JSON::Object::Ptr obj = new Poco::JSON::Object; // smart ptr (auto GC)
             obj->set("host", request.getHost());
