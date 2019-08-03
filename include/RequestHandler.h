@@ -80,13 +80,12 @@ class ServerApp : public ServerApplication
         {
             if (inputs.size() > 0) {
                 cout << "Firing up server with inputs: ";
-                for (auto const & input : inputs) {
-                    cout << input << "; ";
-                }
+                for (auto const & input : inputs) { cout << input << "; "; }
                 cout << endl;
             }
 
-            HTTPServer s(new RequestHandlerFactory, ServerSocket(8080), new HTTPServerParams);
+            ServerSocket socket(8080);
+            HTTPServer server(new RequestHandlerFactory, socket, new HTTPServerParams);
 
             s.start();
             cout << "Server started" << endl;
