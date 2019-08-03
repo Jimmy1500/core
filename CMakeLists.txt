@@ -20,16 +20,17 @@ include_directories("${PROJECT_SOURCE_DIR}")
 include_directories(${Boost_INCLUDE_DIR})
 
 file(GLOB SOURCES "src/*.cpp")
-add_executable(Test ${SOURCES})
+add_executable(Main ${SOURCES})
 
 link_directories("/usr/local/lib")
 set(FOUNDATION_LIB "PocoFoundation")
 set(NET_LIB "PocoNet")
+set(JSON_LIB "PocoJSON")
 set(UTIL_LIB "PocoUtil")
 set(DATA_LIB "PocoData")
 set(MYSQL_LIB "PocoDataMySQL")
-target_link_libraries(Test ${FOUNDATION_LIB} ${NET_LIB} ${UTIL_LIB} ${DATA_LIB} ${MYSQL_LIB})
+target_link_libraries(Main ${FOUNDATION_LIB} ${NET_LIB} ${JSON_LIB} ${UTIL_LIB} ${DATA_LIB} ${MYSQL_LIB})
 
 # PHONY TARGETS
-add_custom_target(run "./Test")
-add_custom_target(memcheck memcheck "./Test")
+add_custom_target(run "./Main")
+add_custom_target(memcheck memcheck "./Main")
