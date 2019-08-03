@@ -28,8 +28,8 @@ class ServerApp : public ServerApplication
                 cout << endl;
             }
 
-            size_t server_port = config().getInt("server.port", 8080); // default = 8080
-            ServerSocket socket(server_port);
+            size_t serverPort = config().getInt("server.port", 8080); // default port = 8080
+            ServerSocket socket(serverPort);
             HTTPServer server(new RequestHandlerFactory, socket, new HTTPServerParams);
 
             server.start();

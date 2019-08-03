@@ -24,16 +24,16 @@ using namespace std;
 
 class RequestHandler : public HTTPRequestHandler {
     private:
-        static size_t RequestHandlerCount;
-        Repository * DB;
+        static size_t requestHandlerCount;
+        Repository * db;
 
     public:
-        RequestHandler() : DB(new Repository), HTTPRequestHandler() {
-            mtx.lock(); ++RequestHandlerCount; mtx.unlock();
+        RequestHandler() : db(new Repository), HTTPRequestHandler() {
+            mtx.lock(); ++requestHandlerCount; mtx.unlock();
         }
 
         ~RequestHandler() {
-            if (DB) { delete DB; }
+            if (db) { delete db; }
         }
 
         virtual void handleRequest(HTTPServerRequest &request, HTTPServerResponse &response) {
@@ -69,12 +69,12 @@ class RequestHandler : public HTTPRequestHandler {
             obj->set("host", request.getHost());
             obj->set("uri", request.getURI());
             obj->set("method", request.getMethod());
-            obj->set("count", RequestHandlerCount);
+            obj->set("count", requestHandlerCount);
             obj->set("message", "hello world!");
             obj->stringify(out);
             out.flush();
 
-            cout << "Response # " << RequestHandlerCount << " sent for URI=" << request.getURI() << endl;
+            cout << "Response # " << requestHandlerCount << " sent for URI=" << request.getURI() << endl;
         }
 
         virtual void handlePut(HTTPServerRequest &request, HTTPServerResponse &response) {
@@ -82,7 +82,7 @@ class RequestHandler : public HTTPRequestHandler {
             ostream& out = response.send();
             out << "Put: Not Implemented";
             out.flush();
-            cout << "Response # " << RequestHandlerCount << " sent for URI=" << request.getURI() << endl;
+            cout << "Response # " << requestHandlerCount << " sent for URI=" << request.getURI() << endl;
         }
 
         virtual void handlePost(HTTPServerRequest &request, HTTPServerResponse &response) {
@@ -90,7 +90,7 @@ class RequestHandler : public HTTPRequestHandler {
             ostream& out = response.send();
             out << "Post: Not Implemented";
             out.flush();
-            cout << "Response # " << RequestHandlerCount << " sent for URI=" << request.getURI() << endl;
+            cout << "Response # " << requestHandlerCount << " sent for URI=" << request.getURI() << endl;
         }
 
         virtual void handlePatch(HTTPServerRequest &request, HTTPServerResponse &response) {
@@ -98,7 +98,7 @@ class RequestHandler : public HTTPRequestHandler {
             ostream& out = response.send();
             out << "PATCH: Not Implemented";
             out.flush();
-            cout << "Response # " << RequestHandlerCount << " sent for URI=" << request.getURI() << endl;
+            cout << "Response # " << requestHandlerCount << " sent for URI=" << request.getURI() << endl;
         }
 
         virtual void handleDelete(HTTPServerRequest &request, HTTPServerResponse &response) {
@@ -106,10 +106,10 @@ class RequestHandler : public HTTPRequestHandler {
             ostream& out = response.send();
             out << "Delete: Not Implemented";
             out.flush();
-            cout << "Response # " << RequestHandlerCount << " sent for URI=" << request.getURI() << endl;
+            cout << "Response # " << requestHandlerCount << " sent for URI=" << request.getURI() << endl;
         }
 };
 
-size_t RequestHandler::RequestHandlerCount = 0;
+size_t RequestHandler::requestHandlerCount = 0;
 
 #endif // REQUEST_HANDLER_H
