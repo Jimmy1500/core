@@ -18,13 +18,20 @@ namespace HTTP {
         PATCH
     };
 
-    static std::map<std::string, Method> Methods = {
+    static std::map<std::string, Method> Methods ({
         {"GET",     GET},
         {"POST",    POST},
         {"PUT",     PUT},
         {"PATCH",   PATCH},
         {"DELETE",  DELETE}
-    };
+    });
 }
 
+namespace CXXPA { // CXXPA: CXX Persistence API
+    struct Tenant
+    {
+        int         id;
+        std::string name;
+    };
+}
 #endif
