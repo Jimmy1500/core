@@ -1,3 +1,6 @@
+#ifndef REQUEST_HANDLER_H
+#define REQUEST_HANDLER_H
+
 #include <Poco/Net/ServerSocket.h>
 #include <Poco/Net/HTTPServer.h>
 #include <Poco/Net/HTTPRequestHandler.h>
@@ -72,51 +75,4 @@ class RequestHandler : public HTTPRequestHandler {
 
 size_t RequestHandler::count = 0;
 
-class RequestHandlerFactory : public HTTPRequestHandlerFactory
-{
-    public:
-        virtual HTTPRequestHandler* createRequestHandler(const HTTPServerRequest &)
-        {
-            return new RequestHandler;
-        }
-};
-
-class ServerApp : public ServerApplication
-{
-    protected:
-        void initialize(Application& self)
-        {
-            loadConfiguration("../application.properties");
-            ServerApplication::initialize(self);
-        }
-
-        void uninitialize()
-        {
-            ServerApplication::uninitialize();
-        }
-
-        int main(const vector<string> & inputs)
-        {
-            if (inputs.size() > 0) {
-                cout << "Firing up server with inputs: ";
-                for (auto const & input : inputs) { cout << input << "; "; }
-                cout << endl;
-            }
-
-            size_t default_port = 9090;
-            size_t port = config().getInt("server.port", default_port);
-
-            ServerSocket socket(port);
-            HTTPServer server(new RequestHandlerFactory, socket, new HTTPServerParams);
-
-            server.start();
-            cout << "Server started" << endl;
-
-            waitForTerminationRequest();  // wait for CTRL-C or kill
-
-            cout << "Shutting down..." << endl;
-            server.stop();
-
-            return Application::EXIT_OK;
-        }
-};
+#endif // REQUEST_HANDLER_H
