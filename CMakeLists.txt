@@ -32,5 +32,6 @@ set(MYSQL_LIB "PocoDataMySQL")
 target_link_libraries(Main ${FOUNDATION_LIB} ${NET_LIB} ${JSON_LIB} ${UTIL_LIB} ${DATA_LIB} ${MYSQL_LIB})
 
 # PHONY TARGETS
+add_custom_target(sync cp ../application.properties .)
 add_custom_target(run "./Main")
 add_custom_target(memcheck memcheck "./Main")
