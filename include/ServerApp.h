@@ -58,7 +58,7 @@ class ServerApp : public ServerApplication
 
             waitForTerminationRequest();  // wait for CTRL-C or kill
 
-            cout << "### Shutting down..." << endl;
+            cout << "### Server shutting down..." << endl;
             server.stop();
             Repository::reset();
 
