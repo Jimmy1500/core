@@ -7,7 +7,13 @@ class ServerApp : public ServerApplication
 {
     protected:
         void initialize(Application& self) {
-            loadConfiguration("../application.properties");
+            try {
+                loadConfiguration("application.properties");
+                cout << "### configuration loaded : application.properties" << endl;
+            } catch (Poco::FileNotFoundException& e) {
+                cout << "### " << e.what() << " : application.properties, try: `make sync` to resolve" << endl;
+                cout << "### using default configurations" << endl;
+            }
             ServerApplication::initialize(self);
         }
 
@@ -22,7 +28,7 @@ class ServerApp : public ServerApplication
                 cout << endl;
             }
 
-            size_t port = config().getInt("server.port", 8081); // default = 8081
+            size_t port = config().getInt("server.port", 8080); // default = 8080
             ServerSocket socket(port);
             HTTPServer server(new RequestHandlerFactory, socket, new HTTPServerParams);
 
