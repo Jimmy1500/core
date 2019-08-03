@@ -84,6 +84,17 @@ class RequestHandlerFactory : public HTTPRequestHandlerFactory
 class ServerApp : public ServerApplication
 {
     protected:
+        void initialize(Application& self)
+        {
+            loadConfiguration("../application.properties");
+            ServerApplication::initialize(self);
+        }
+
+        void uninitialize()
+        {
+            ServerApplication::uninitialize();
+        }
+
         int main(const vector<string> & inputs)
         {
             if (inputs.size() > 0) {
@@ -92,7 +103,10 @@ class ServerApp : public ServerApplication
                 cout << endl;
             }
 
-            ServerSocket socket(8080);
+            size_t default_port = 9090;
+            size_t port = config().getInt("server.port", default_port);
+
+            ServerSocket socket(port);
             HTTPServer server(new RequestHandlerFactory, socket, new HTTPServerParams);
 
             server.start();
