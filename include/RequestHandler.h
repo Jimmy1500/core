@@ -64,7 +64,7 @@ class RequestHandler : public HTTPRequestHandler {
         }
 
         virtual void handleRequest(HTTPServerRequest &request, HTTPServerResponse &response) {
-            const string method = request.getMethod();
+            const string & method = request.getMethod();
             switch (HTTP::Methods[method]) {
                 case HTTP::GET:
                     handleGet(request, response);
