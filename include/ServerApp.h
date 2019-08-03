@@ -25,9 +25,7 @@ class ServerApp : public ServerApplication
                 cout << endl;
             }
 
-            size_t default_port = 9090;
-            size_t port = config().getInt("server.port", default_port);
-
+            size_t port = config().getInt("server.port", 8081); // default = 8081
             ServerSocket socket(port);
             HTTPServer server(new RequestHandlerFactory, socket, new HTTPServerParams);
 
