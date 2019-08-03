@@ -36,31 +36,28 @@ class RequestHandler : public HTTPRequestHandler {
             if (db) { delete db; }
         }
 
-        virtual void handleRequest(HTTPServerRequest &request, HTTPServerResponse &response) {
+        virtual void handleRequest(HTTPServerRequest& request, HTTPServerResponse& response) {
             const string & method = request.getMethod();
             switch (HTTP::Methods[method]) {
                 case HTTP::GET:
                     handleGet(request, response);
                     break;
                 case HTTP::PUT:
-                    handlePut(request, response);
-                    break;
                 case HTTP::POST:
-                    handlePost(request, response);
-                    break;
                 case HTTP::PATCH:
-                    handlePatch(request, response);
-                    break;
                 case HTTP::DELETE:
-                    handleDelete(request, response);
-                    break;
                 default:
+                    response.setStatus(HTTPResponse::HTTP_OK);
+                    ostream& out = response.send();
+                    out << method << " : Not Implemented";
+                    out.flush();
+                    cout << "Response # " << requestHandlerCount << " sent for URI=" << request.getURI() << endl;
                     break;
 
             }
         }
 
-        virtual void handleGet(HTTPServerRequest &request, HTTPServerResponse &response) {
+        virtual void handleGet(HTTPServerRequest& request, HTTPServerResponse& response) {
             response.setStatus(HTTPResponse::HTTP_OK);
             response.setContentType("application/json");
 
@@ -77,37 +74,6 @@ class RequestHandler : public HTTPRequestHandler {
             cout << "Response # " << requestHandlerCount << " sent for URI=" << request.getURI() << endl;
         }
 
-        virtual void handlePut(HTTPServerRequest &request, HTTPServerResponse &response) {
-            response.setStatus(HTTPResponse::HTTP_OK);
-            ostream& out = response.send();
-            out << "Put: Not Implemented";
-            out.flush();
-            cout << "Response # " << requestHandlerCount << " sent for URI=" << request.getURI() << endl;
-        }
-
-        virtual void handlePost(HTTPServerRequest &request, HTTPServerResponse &response) {
-            response.setStatus(HTTPResponse::HTTP_OK);
-            ostream& out = response.send();
-            out << "Post: Not Implemented";
-            out.flush();
-            cout << "Response # " << requestHandlerCount << " sent for URI=" << request.getURI() << endl;
-        }
-
-        virtual void handlePatch(HTTPServerRequest &request, HTTPServerResponse &response) {
-            response.setStatus(HTTPResponse::HTTP_OK);
-            ostream& out = response.send();
-            out << "PATCH: Not Implemented";
-            out.flush();
-            cout << "Response # " << requestHandlerCount << " sent for URI=" << request.getURI() << endl;
-        }
-
-        virtual void handleDelete(HTTPServerRequest &request, HTTPServerResponse &response) {
-            response.setStatus(HTTPResponse::HTTP_OK);
-            ostream& out = response.send();
-            out << "Delete: Not Implemented";
-            out.flush();
-            cout << "Response # " << requestHandlerCount << " sent for URI=" << request.getURI() << endl;
-        }
 };
 
 size_t RequestHandler::requestHandlerCount = 0;
