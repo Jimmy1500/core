@@ -22,37 +22,13 @@
 #include <Poco/Data/SessionFactory.h>
 #include <Poco/Data/MySQL/MySQLException.h>
 
-#include <iostream>
-#include <string>
-#include <vector>
-#include <thread>
-#include <mutex>
+#include "Global.h"
 
 using namespace Poco::Net;
 using namespace Poco::Util;
 using namespace Poco::JSON;
 using namespace Poco::Data;
 using namespace std;
-
-static mutex mtx;
-
-namespace HTTP {
-    enum Method {
-        GET = 0,
-        POST,
-        PUT,
-        DELETE,
-        PATCH
-    };
-
-    static std::map<string, Method> Methods = {
-        {"GET",     GET},
-        {"POST",    POST},
-        {"PUT",     PUT},
-        {"PATCH",   PATCH},
-        {"DELETE",  DELETE}
-    };
-}
 
 class RequestHandler : public HTTPRequestHandler {
     private:
