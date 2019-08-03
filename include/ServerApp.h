@@ -23,7 +23,7 @@ class ServerApp : public ServerApplication
 
         int main(const vector<string> & inputs) {
             if (inputs.size() > 0) {
-                cout << "Starting server with inputs: ";
+                cout << "### Starting server with inputs: ";
                 for (auto const & input : inputs) { cout << input << "; "; }
                 cout << endl;
             }
@@ -34,11 +34,11 @@ class ServerApp : public ServerApplication
             HTTPServer server(new RequestHandlerFactory, socket, new HTTPServerParams);
 
             server.start();
-            cout << "Server started" << endl;
+            cout << "### Server started" << endl;
 
             waitForTerminationRequest();  // wait for CTRL-C or kill
 
-            cout << "Shutting down..." << endl;
+            cout << "### Shutting down..." << endl;
             server.stop();
 
             return Application::EXIT_OK;
