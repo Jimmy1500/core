@@ -22,25 +22,26 @@ using namespace Poco::Util;
 using namespace Poco::JSON;
 using namespace std;
 
+typedef map<string, function<void(HTTPServerRequest& request, HTTPServerResponse& response)>> FnMap;
+
 class RequestHandler : public HTTPRequestHandler {
     private:
         static size_t requestHandlerCount;
         Repository * db;
-        map<string, function<void(HTTPServerRequest& request, HTTPServerResponse& response)>> mapGET;
+        FnMap * funcs;
 
     public:
-        RequestHandler() : db(new Repository), HTTPRequestHandler()
+        RequestHandler() : db(new Repository), funcs(new FnMap[HTTP::NUM_HTTP_METHODS]), HTTPRequestHandler()
         {
             mtx.lock(); ++requestHandlerCount; mtx.unlock();
-            mapGET =
-            {
-                {
-                    "/",
+            funcs[HTTP::GET].emplace
+                ("/",
                     [this](HTTPServerRequest& request, HTTPServerResponse& response)->void {
                         response.setStatus(HTTPResponse::HTTP_OK);
                         response.setContentType("application/json");
 
-                        // DAO::Tenant tenant; db->popById(1, tenant);
+                        DAO::Tenant tenant; db->popById(1, tenant);
+                        cout << tenant.id << ", " << tenant.name << endl;
                         ostream& out = response.send();
                         Poco::JSON::Object::Ptr obj = new Poco::JSON::Object; // smart ptr (auto GC)
                         obj->set("host", request.getHost());
@@ -51,35 +52,19 @@ class RequestHandler : public HTTPRequestHandler {
                         obj->stringify(out);
                         out.flush();
                         cout << "Response # " << requestHandlerCount <<
-                            " sent for URI=" << request.getURI() << endl;
+                        " sent for URI=" << request.getURI() << endl;
                     }
-                }
-            };
+                );
         }
 
         ~RequestHandler() {
             if (db) { delete db; }
+            if (funcs) { delete [] funcs; }
         }
 
         virtual void handleRequest(HTTPServerRequest& request, HTTPServerResponse& response) {
-            const string & method = request.getMethod();
-            switch (HTTP::Methods[method]) {
-                case HTTP::GET:
-                    mapGET[request.getURI()](request, response);
-                    break;
-                case HTTP::PUT:
-                case HTTP::POST:
-                case HTTP::PATCH:
-                case HTTP::DELETE:
-                default:
-                    response.setStatus(HTTPResponse::HTTP_OK);
-                    ostream& out = response.send();
-                    out << method << " : Not Implemented";
-                    out.flush();
-                    cout << "### Response # " << requestHandlerCount << " sent for URI=" << request.getURI() << endl;
-                    break;
-
-            }
+            const size_t method = HTTP::Methods[request.getMethod()];
+            funcs[method][request.getURI()](request, response);
         }
 
 };
