@@ -16,7 +16,8 @@ namespace HTTP {
         POST,
         PUT,
         DELETE,
-        PATCH
+        PATCH,
+        NUM_HTTP_METHODS
     };
 
     static std::map<std::string, Method> Methods
