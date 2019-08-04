@@ -1,11 +1,12 @@
 #ifndef GLOBAL_H
 #define GLOBAL_H
 
-#include <iostream>
+#include <mutex>
 #include <string>
 #include <vector>
 #include <thread>
-#include <mutex>
+#include <iostream>
+#include <functional>
 
 static std::mutex mtx;
 
