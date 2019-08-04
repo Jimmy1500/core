@@ -62,7 +62,6 @@ class Repository {
                    Keywords::into(tenant.id),
                    Keywords::into(tenant.name),
                    Keywords::now;
-            cout<< tenant.id << ", " << tenant.name << endl;
         }
 
 };
