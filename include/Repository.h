@@ -1,11 +1,11 @@
 #ifndef REPOSITORY_H
 #define REPOSITORY_H
 
-#include <Poco/Data/MySQL/Connector.h>
 #include <Poco/Data/Time.h>
 #include <Poco/Data/Session.h>
 #include <Poco/Data/SessionPool.h>
 #include <Poco/Data/SessionFactory.h>
+#include <Poco/Data/MySQL/Connector.h>
 #include <Poco/Data/MySQL/MySQLException.h>
 
 #include "Global.h"
@@ -54,19 +54,8 @@ class Repository {
             cout << "### Database session pool destroyed!" << endl;
         }
 
-        void popById(int id, DAO::Tenant & tenant) {
-            Session session(repositoryPool->get());
-            Poco::Data::Statement select(session);
-            select << "SELECT * FROM tenant WHERE tenant_id = ?",
-                   Keywords::use(id),
-                   Keywords::into(tenant.id),
-                   Keywords::into(tenant.name),
-                   Keywords::now;
-        }
+        void popById(int, DAO::Tenant &);
 
 };
 
-unique_ptr<SessionPool> Repository::repositoryPool = nullptr;
-size_t Repository::repositoryCount = 0;
-size_t Repository::repositoryMask = 0;
 #endif
