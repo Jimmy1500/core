@@ -26,10 +26,35 @@ class RequestHandler : public HTTPRequestHandler {
     private:
         static size_t requestHandlerCount;
         Repository * db;
+        map<string, function<void(HTTPServerRequest& request, HTTPServerResponse& response)>> mapGET;
 
     public:
-        RequestHandler() : db(new Repository), HTTPRequestHandler() {
+        RequestHandler() : db(new Repository), HTTPRequestHandler()
+        {
             mtx.lock(); ++requestHandlerCount; mtx.unlock();
+            mapGET =
+            {
+                {
+                    "/",
+                    [this](HTTPServerRequest& request, HTTPServerResponse& response)->void {
+                        response.setStatus(HTTPResponse::HTTP_OK);
+                        response.setContentType("application/json");
+
+                        // DAO::Tenant tenant; db->popById(1, tenant);
+                        ostream& out = response.send();
+                        Poco::JSON::Object::Ptr obj = new Poco::JSON::Object; // smart ptr (auto GC)
+                        obj->set("host", request.getHost());
+                        obj->set("uri", request.getURI());
+                        obj->set("method", request.getMethod());
+                        obj->set("count", requestHandlerCount);
+                        obj->set("message", "hello world!");
+                        obj->stringify(out);
+                        out.flush();
+                        cout << "Response # " << requestHandlerCount <<
+                            " sent for URI=" << request.getURI() << endl;
+                    }
+                }
+            };
         }
 
         ~RequestHandler() {
@@ -40,7 +65,7 @@ class RequestHandler : public HTTPRequestHandler {
             const string & method = request.getMethod();
             switch (HTTP::Methods[method]) {
                 case HTTP::GET:
-                    handleGet(request, response);
+                    mapGET[request.getURI()](request, response);
                     break;
                 case HTTP::PUT:
                 case HTTP::POST:
@@ -55,24 +80,6 @@ class RequestHandler : public HTTPRequestHandler {
                     break;
 
             }
-        }
-
-        virtual void handleGet(HTTPServerRequest& request, HTTPServerResponse& response) {
-            response.setStatus(HTTPResponse::HTTP_OK);
-            response.setContentType("application/json");
-
-            // DAO::Tenant tenant; db->popById(1, tenant);
-            ostream& out = response.send();
-            Poco::JSON::Object::Ptr obj = new Poco::JSON::Object; // smart ptr (auto GC)
-            obj->set("host", request.getHost());
-            obj->set("uri", request.getURI());
-            obj->set("method", request.getMethod());
-            obj->set("count", requestHandlerCount);
-            obj->set("message", "hello world!");
-            obj->stringify(out);
-            out.flush();
-
-            cout << "Response # " << requestHandlerCount << " sent for URI=" << request.getURI() << endl;
         }
 
 };
