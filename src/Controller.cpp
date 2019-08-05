@@ -56,9 +56,9 @@ void Controller::mapGet(FuncMap & gets) {
 
             Object::Ptr req = parser.parse(request.stream()).extract<Object::Ptr>();
             ret->set("request", req);
+
             int tenantId = req->getValue<int>("tenant_id");
-            DAO::Tenant tenant;
-            db.popById(tenantId, tenant);
+            DAO::Tenant tenant; db.popById(tenantId, tenant);
 
             Object::Ptr resp = new Object;
             resp->set("tenant_id", tenant.id);
