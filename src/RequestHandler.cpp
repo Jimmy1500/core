@@ -38,7 +38,7 @@ void RequestHandler::mapGet(FuncMap & gets) {
                Object::Ptr req = parser.parse(request.stream()).extract<Object::Ptr>();
                ret->set("request", req);
             } catch (Poco::JSON::JSONException& e) {
-                ret->set("request", e.what());
+                ret->set("response", e.what());
             } catch (std::exception& e) {
                 ret->set("response", e.what());
             }
@@ -72,7 +72,7 @@ void RequestHandler::mapGet(FuncMap & gets) {
             } catch (Poco::Data::MySQL::StatementException& e) {
                 ret->set("response", e.what());
             } catch (Poco::JSON::JSONException& e) {
-                ret->set("request", e.what());
+                ret->set("response", e.what());
             } catch (std::exception& e) {
                 ret->set("response", e.what());
             }
