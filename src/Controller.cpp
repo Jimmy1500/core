@@ -1,8 +1,8 @@
-#include "RequestHandler.h"
+#include "Controller.h"
 
-size_t RequestHandler::requestHandlerCount = 0;
+size_t Controller::requestHandlerCount = 0;
 
-RequestHandler::RequestHandler() :
+Controller::Controller() :
     parser(),
     db(),
     funcs(new FuncMap[HTTP::NUM_HTTP_METHODS]),
@@ -16,11 +16,11 @@ RequestHandler::RequestHandler() :
     mapDelete(funcs[HTTP::DELETE]);
 }
 
-RequestHandler::~RequestHandler() {
+Controller::~Controller() {
     if (funcs) { delete [] funcs; }
 }
 
-void RequestHandler::mapGet(FuncMap & gets) {
+void Controller::mapGet(FuncMap & gets) {
     gets.emplace
         ("/",
          [&](HTTPServerRequest& request, HTTPServerResponse& response)-> void {
@@ -84,7 +84,7 @@ void RequestHandler::mapGet(FuncMap & gets) {
       );
 }
 
-void RequestHandler::mapPut(FuncMap & puts) { }
-void RequestHandler::mapPost(FuncMap & posts) { }
-void RequestHandler::mapPatch(FuncMap & patches) { }
-void RequestHandler::mapDelete(FuncMap & deletes) { }
+void Controller::mapPut(FuncMap & puts) { }
+void Controller::mapPost(FuncMap & posts) { }
+void Controller::mapPatch(FuncMap & patches) { }
+void Controller::mapDelete(FuncMap & deletes) { }

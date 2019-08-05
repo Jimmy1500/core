@@ -21,7 +21,7 @@ using namespace Poco::Dynamic;
 
 typedef map<string, function<void(HTTPServerRequest& request, HTTPServerResponse& response)>> FuncMap;
 
-class RequestHandler : public HTTPRequestHandler {
+class Controller : public HTTPRequestHandler {
     private:
         static size_t requestHandlerCount;
         Parser parser;
@@ -29,8 +29,8 @@ class RequestHandler : public HTTPRequestHandler {
         FuncMap * funcs;
 
     public:
-        RequestHandler();
-        ~RequestHandler();
+        Controller();
+        ~Controller();
 
         virtual void handleRequest(HTTPServerRequest& request, HTTPServerResponse& response) {
             const size_t method(HTTP::Methods[request.getMethod()]);
