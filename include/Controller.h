@@ -8,14 +8,16 @@
 #include <Poco/JSON/Stringifier.h>
 #include <Poco/Dynamic/Var.h>
 
-#include "rapidjson/writer.h"
-#include "rapidjson/prettywriter.h"
-#include "rapidjson/stringbuffer.h"
-#include "rapidjson/document.h"
-
 #include <Poco/Net/HTTPRequestHandler.h>
 #include <Poco/Net/HTTPServerRequest.h>
 #include <Poco/Net/HTTPServerResponse.h>
+
+#include <rapidjson/writer.h>
+#include <rapidjson/document.h>
+#include <rapidjson/prettywriter.h>
+#include <rapidjson/stringbuffer.h>
+#include <rapidjson/istreamwrapper.h>
+#include <rapidjson/ostreamwrapper.h>
 
 #include "Repository.h"
 
@@ -23,6 +25,7 @@ using namespace std;
 using namespace Poco::Net;
 using namespace Poco::JSON;
 using namespace Poco::Dynamic;
+using namespace rapidjson;
 
 typedef map<string, function<void(HTTPServerRequest& request, HTTPServerResponse& response)>> FuncMap;
 
