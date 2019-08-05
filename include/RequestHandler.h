@@ -33,7 +33,7 @@ class RequestHandler : public HTTPRequestHandler {
         ~RequestHandler();
 
         virtual void handleRequest(HTTPServerRequest& request, HTTPServerResponse& response) {
-            const size_t method = HTTP::Methods[request.getMethod()];
+            const size_t method(HTTP::Methods[request.getMethod()]);
             auto func = funcs[method][request.getURI()];
             if (func) {
                 func(request, response);
