@@ -32,6 +32,8 @@ namespace HTTP {
 
 namespace DAO { // Data Access Objects
     struct Tenant {
+        Tenant() = default;
+        Tenant(int id, std::string & name) : id(id), name(name) { }
         int         id;
         std::string name;
     };

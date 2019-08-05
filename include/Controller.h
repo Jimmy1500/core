@@ -8,6 +8,11 @@
 #include <Poco/JSON/Stringifier.h>
 #include <Poco/Dynamic/Var.h>
 
+#include "rapidjson/writer.h"
+#include "rapidjson/prettywriter.h"
+#include "rapidjson/stringbuffer.h"
+#include "rapidjson/document.h"
+
 #include <Poco/Net/HTTPRequestHandler.h>
 #include <Poco/Net/HTTPServerRequest.h>
 #include <Poco/Net/HTTPServerResponse.h>

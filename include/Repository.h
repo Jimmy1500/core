@@ -55,6 +55,7 @@ class Repository {
         }
 
         void popById(int, DAO::Tenant &);
+        void popAll(vector<DAO::Tenant> &);
 
 };
 
