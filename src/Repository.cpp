@@ -22,8 +22,8 @@ void Repository::popAll(vector<DAO::Tenant>& tenants) {
            Keywords::into(id),
            Keywords::into(name),
            Keywords::range(0, 1);
-    while (!select.done())
-    {
+
+    while (!select.done()) {
         select.execute();
         tenants.emplace_back(id, name);
     }
