@@ -37,10 +37,6 @@ void RequestHandler::mapGet(FuncMap & gets) {
 
                Object::Ptr req = parser.parse(request.stream()).extract<Object::Ptr>();
                ret->set("request", req);
-            } catch (Poco::Data::MySQL::ConnectionException& e) {
-                ret->set("response", e.what());
-            } catch (Poco::Data::MySQL::StatementException& e) {
-                ret->set("response", e.what());
             } catch (Poco::JSON::JSONException& e) {
                 ret->set("request", e.what());
             } catch (std::exception& e) {
