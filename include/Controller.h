@@ -50,8 +50,10 @@ class Controller : public HTTPRequestHandler {
                 os << "NOT IMPLEMENTED";
                 os.flush();
             }
+            mtx.lock();
             cout << "Response # " << requestHandlerCount
                 << " sent for URI=" << request.getURI() << endl;
+            mtx.unlock();
         }
 
         void mapGet(FuncMap &);

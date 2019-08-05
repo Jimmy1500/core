@@ -82,16 +82,17 @@ void Controller::mapGet(FuncMap & gets) {
 
     gets.emplace ("/tenants",
             [&](HTTPServerRequest& request, HTTPServerResponse& response)-> void {
+            ostream& os = response.send();
+            OStreamWrapper osw(os);
+
+            //PrettyWriter<OStreamWrapper> writer(osw);
+            Writer<OStreamWrapper> writer(osw);
+
             try {
             response.setStatus(HTTPResponse::HTTP_OK);
             response.setContentType("application/json");
 
             vector<DAO::Tenant> tenants; db.popAll(tenants);
-
-            ostream& os = response.send();
-            OStreamWrapper osw(os);
-            //PrettyWriter<OStreamWrapper> writer(osw);
-            Writer<OStreamWrapper> writer(osw);
 
             writer.StartArray();
             for (DAO::Tenant const & tenant : tenants) {
@@ -103,13 +104,21 @@ void Controller::mapGet(FuncMap & gets) {
             writer.EndArray();
             os.flush();
             } catch (Poco::Data::MySQL::ConnectionException& e) {
-                cout << e.what() << endl;
+                writer.StartObject();
+                writer.Key("response"); writer.String(e.what());
+                writer.EndObject();
             } catch (Poco::Data::MySQL::StatementException& e) {
-                cout << e.what() << endl;
+                writer.StartObject();
+                writer.Key("response"); writer.String(e.what());
+                writer.EndObject();
             } catch (Poco::JSON::JSONException& e) {
-                cout << e.what() << endl;
+                writer.StartObject();
+                writer.Key("response"); writer.String(e.what());
+                writer.EndObject();
             } catch (std::exception& e) {
-                cout << e.what() << endl;
+                writer.StartObject();
+                writer.Key("response"); writer.String(e.what());
+                writer.EndObject();
             }
             }
     );
