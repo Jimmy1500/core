@@ -26,7 +26,7 @@ class RequestHandler : public HTTPRequestHandler {
         static size_t requestHandlerCount;
         Parser parser;
         Repository db;
-        FuncMap * route;
+        FuncMap * funcs;
 
     public:
         RequestHandler();
@@ -34,16 +34,23 @@ class RequestHandler : public HTTPRequestHandler {
 
         virtual void handleRequest(HTTPServerRequest& request, HTTPServerResponse& response) {
             const size_t method = HTTP::Methods[request.getMethod()];
-            route[method][request.getURI()](request, response);
-            cout << "Response # " << requestHandlerCount <<
-                " sent for URI=" << request.getURI() << endl;
+            auto func = funcs[method][request.getURI()];
+            if (func) {
+                func(request, response);
+            } else {
+                ostream& os = response.send();
+                os << "NOT IMPLEMENTED";
+                os.flush();
+            }
+            cout << "Response # " << requestHandlerCount
+                << " sent for URI=" << request.getURI() << endl;
         }
 
-        void mapGets(FuncMap &);
-        void mapPuts(FuncMap &);
-        void mapPosts(FuncMap &);
-        void mapPatches(FuncMap &);
-        void mapDeletes(FuncMap &);
+        void mapGet(FuncMap &);
+        void mapPut(FuncMap &);
+        void mapPost(FuncMap &);
+        void mapPatch(FuncMap &);
+        void mapDelete(FuncMap &);
 };
 
 #endif // REQUEST_HANDLER_H
