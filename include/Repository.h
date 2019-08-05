@@ -32,7 +32,7 @@ class Repository {
         }
 
         static inline size_t existsPool() {
-            return BIN::IsDirty(repositoryMask, SYS::DB_SESS_POOL);
+            return BIN::isDirty(repositoryMask, SYS::DB_SESS_POOL);
         }
 
         static inline void init(string& connector, string& connectionString,
@@ -41,7 +41,7 @@ class Repository {
             if (!existsPool()) {
                 repositoryPool = make_unique<SessionPool>(
                         connector, connectionString, minSessions, maxSessions, idleTime);
-                BIN::MarkDirty(repositoryMask, SYS::DB_SESS_POOL);
+                BIN::markDirty(repositoryMask, SYS::DB_SESS_POOL);
             }
             cout << "### Database session pool created!" << endl;
         }
@@ -49,7 +49,7 @@ class Repository {
         static inline void reset() {
             if (existsPool()) {
                 repositoryPool.reset();
-                BIN::ClearDirty(repositoryMask, SYS::DB_SESS_POOL);
+                BIN::clearDirty(repositoryMask, SYS::DB_SESS_POOL);
             }
             cout << "### Database session pool destroyed!" << endl;
         }
