@@ -32,7 +32,7 @@ typedef map<string, function<void(HTTPServerRequest& request, HTTPServerResponse
 class Controller : public HTTPRequestHandler {
     private:
         static size_t requestHandlerCount;
-        Parser parser;
+        Poco::JSON::Parser parser;
         Repository db;
         FuncMap * funcs;
 
