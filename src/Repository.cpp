@@ -17,6 +17,7 @@ void Repository::popById(int id, DAO::Tenant& tenant) {
 void Repository::popAll(vector<DAO::Tenant>& tenants) {
     mtx.lock(); Session session(repositoryPool->get()); mtx.unlock();
     Poco::Data::Statement select(session);
+
     int id; string name;
     select << "SELECT * FROM tenant",
            Keywords::into(id),
