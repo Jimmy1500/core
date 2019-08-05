@@ -5,7 +5,7 @@ size_t Repository::repositoryCount = 0;
 size_t Repository::repositoryMask = 0;
 
 void Repository::popById(int id, DAO::Tenant & tenant) {
-    Session session(repositoryPool->get());
+    mtx.lock(); Session session(repositoryPool->get()); mtx.unlock();
     Poco::Data::Statement select(session);
     select << "SELECT * FROM tenant WHERE tenant_id = ?",
            Keywords::use(id),

@@ -21,14 +21,14 @@ class Repository {
     public:
         Repository() {
             Poco::Data::MySQL::Connector::registerConnector();
-            ++repositoryCount;
+            mtx.lock(); ++repositoryCount; mtx.unlock();
             cout << MySQL::Connector::KEY << " connector # " << repositoryCount << " registered!" << endl;
         }
 
         ~Repository() {
             Poco::Data::MySQL::Connector::unregisterConnector();
             cout << MySQL::Connector::KEY << " connector # " << repositoryCount << " unregistered!" << endl;
-            --repositoryCount;
+            mtx.lock(); --repositoryCount; mtx.unlock();
         }
 
         static inline size_t existsPool() {
