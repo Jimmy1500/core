@@ -9,8 +9,7 @@ class RequestHandlerFactory : public HTTPRequestHandlerFactory
 {
     public:
         virtual HTTPRequestHandler* createRequestHandler(const HTTPServerRequest &) {
-            mtx.lock(); ++REGISTRY::handlerCount; mtx.unlock();
-            return new Controller(REGISTRY::handlerCount);
+            return new Controller;
         }
 };
 

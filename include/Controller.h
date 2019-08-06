@@ -27,39 +27,39 @@ using namespace Poco::JSON;
 using namespace Poco::Dynamic;
 using namespace rapidjson;
 
-typedef map<string, function<void(HTTPServerRequest& request, HTTPServerResponse& response)>> FuncMap;
+typedef map<string, function<void(HTTPServerRequest&, HTTPServerResponse&)>> RestMap;
 
 class Controller : public HTTPRequestHandler {
     private:
-        size_t id;
         Poco::JSON::Parser parser;
         Repository db;
-        FuncMap * funcs;
+        RestMap * restMap;
 
     public:
-        Controller(size_t);
+        Controller();
         ~Controller();
 
         virtual void handleRequest(HTTPServerRequest& request, HTTPServerResponse& response) {
             const size_t method(HTTP::Methods[request.getMethod()]);
-            auto func = funcs[method][request.getURI()];
-            if (func) {
-                func(request, response);
+            auto rest = restMap[method][request.getURI()];
+            if (rest) {
+                rest(request, response);
             } else {
                 ostream& os = response.send();
-                os << "NOT IMPLEMENTED" << endl;
+                os << request.getHost() << request.getURI() << " NOT IMPLEMENTED" << endl;
                 os.flush();
             }
             mtx.lock();
-            cout << "Response # " << id << " sent for URI=" << request.getURI() << endl;
+            cout << "Response sent for URI=" << request.getURI() << endl;
             mtx.unlock();
         }
 
-        void mapGet(FuncMap &);
-        void mapPut(FuncMap &);
-        void mapPost(FuncMap &);
-        void mapPatch(FuncMap &);
-        void mapDelete(FuncMap &);
+        // RESTful
+        void mapGet(RestMap &);
+        void mapPut(RestMap &);
+        void mapPost(RestMap &);
+        void mapPatch(RestMap &);
+        void mapDelete(RestMap &);
 };
 
 #endif // REQUEST_HANDLER_H

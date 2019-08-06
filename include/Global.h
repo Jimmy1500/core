@@ -41,13 +41,16 @@ namespace DAO { // Data Access Objects
 
 namespace SYS {
     enum Flags {
-        DB_SESS_POOL = 1,
+        DB_SESSION_POOL = 1,
         NUM_SYS_FLAGS
     };
-}
 
-namespace REGISTRY {
-    static size_t handlerCount = 0;
+    struct Registry {
+        size_t controllerCount;
+        size_t repositoryMask;
+    };
+
+    static volatile Registry registry{0, 0};
 }
 
 namespace BIN {

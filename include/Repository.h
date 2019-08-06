@@ -16,7 +16,6 @@ using namespace Poco::Data;
 class Repository {
     private:
         static unique_ptr<SessionPool> repositoryPool;
-        static size_t repositoryMask;
     public:
         Repository() {
             Poco::Data::MySQL::Connector::registerConnector();
@@ -27,7 +26,7 @@ class Repository {
         }
 
         static inline size_t existsPool() {
-            return BIN::isDirty(repositoryMask, SYS::DB_SESS_POOL);
+            return BIN::isDirty(SYS::registry.repositoryMask, SYS::DB_SESSION_POOL);
         }
 
         static inline void init(string& connector, string& connectionString,
@@ -36,7 +35,7 @@ class Repository {
             if (!existsPool()) {
                 repositoryPool = make_unique<SessionPool>(
                         connector, connectionString, minSessions, maxSessions, idleTime);
-                BIN::markDirty(repositoryMask, SYS::DB_SESS_POOL);
+                BIN::markDirty(SYS::registry.repositoryMask, SYS::DB_SESSION_POOL);
             }
             cout << "### Database session pool created!" << endl;
         }
@@ -44,7 +43,7 @@ class Repository {
         static inline void reset() {
             if (existsPool()) {
                 repositoryPool.reset();
-                BIN::clearDirty(repositoryMask, SYS::DB_SESS_POOL);
+                BIN::clearDirty(SYS::registry.repositoryMask, SYS::DB_SESSION_POOL);
             }
             cout << "### Database session pool destroyed!" << endl;
         }

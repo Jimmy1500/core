@@ -20,14 +20,37 @@ class ServerApp : public ServerApplication
             try {
                 loadConfiguration("application.properties");
                 cout << "### configuration loaded : application.properties" << endl;
+
+                if (!Repository::existsPool()) {
+                    string user(getenv( config().getString("database.username", "DB_USERNAME").c_str() ));
+                    string password(getenv( config().getString("database.password", "DB_PASSWORD").c_str() ));
+                    string db(getenv( config().getString("database.name", "DB_DATABASE").c_str() ));
+                    string port( config().getString("database.port", "3306") );
+
+                    string host="127.0.0.1", compress="true", autoReconnect="true";
+                    string connectionString(
+                            "host=" + host +
+                            ";user=" + user +
+                            ";password=" + password +
+                            ";db=" + db +
+                            ";port=" + port +
+                            ";compress=" + compress +
+                            ";auto-reconnect=" + autoReconnect + ";");
+                    size_t minSessions = 1, maxSessions = 32, idleTime = 60;
+
+                    Repository::init(Poco::Data::MySQL::Connector::KEY, connectionString, minSessions, maxSessions, idleTime);
+                }
             } catch (Poco::FileNotFoundException& e) {
-                cout << "### " << e.what() << " : application.properties, try: `make sync` to resolve" << endl;
+                cout << "### " << e.what() << " : application.properties, try: `make sync` in build directory to resolve" << endl;
                 cout << "### using default configurations" << endl;
+            } catch (std::exception& e ) {
+                cout << "### " << e.what() << endl;
             }
             ServerApplication::initialize(self);
         }
 
         void uninitialize() {
+            Repository::reset();
             ServerApplication::uninitialize();
         }
 
@@ -38,29 +61,7 @@ class ServerApp : public ServerApplication
                 cout << endl;
             }
 
-            if (!Repository::existsPool()) {
-                string port( config().getString("database.port", "3306") );
-                string db(getenv( config().getString("database.name", "DB_DATABASE").c_str() ));
-                string user(getenv( config().getString("database.username", "DB_USERNAME").c_str() ));
-                string password(getenv( config().getString("database.password", "DB_PASSWORD").c_str() ));
-
-                string host="127.0.0.1", compress="true", autoReconnect="true";
-                string connectionString(
-                        "host=" + host +
-                        ";user=" + user +
-                        ";password=" + password +
-                        ";db=" + db +
-                        ";port=" + port +
-                        ";compress=" + compress +
-                        ";auto-reconnect=" + autoReconnect + ";");
-
-                size_t minSessions = 1, maxSessions = 32, idleTime = 60;
-                Repository::init(Poco::Data::MySQL::Connector::KEY,
-                        connectionString, minSessions, maxSessions, idleTime);
-            }
-
-            size_t serverPort = config().getInt("server.port", 8080); // default port = 8080
-            ServerSocket socket(serverPort);
+            ServerSocket socket(config().getInt("server.port", 8080)); // default port = 8080
             HTTPServer server(new RequestHandlerFactory, socket, new HTTPServerParams);
 
             server.start();
@@ -70,7 +71,6 @@ class ServerApp : public ServerApplication
 
             cout << "### Server shutting down..." << endl;
             server.stop();
-            Repository::reset();
 
             return Application::EXIT_OK;
         }

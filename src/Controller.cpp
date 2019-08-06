@@ -1,25 +1,25 @@
 #include "Controller.h"
 
-Controller::Controller(size_t id) :
-    id(id),
+Controller::Controller() :
     parser(),
     db(),
-    funcs(new FuncMap[HTTP::NUM_HTTP_METHODS]),
+    restMap(new RestMap[HTTP::NUM_HTTP_METHODS]),
     HTTPRequestHandler()
 {
-    mapGet(funcs[HTTP::GET]);
-    mapPut(funcs[HTTP::PUT]);
-    mapPost(funcs[HTTP::POST]);
-    mapPatch(funcs[HTTP::PATCH]);
-    mapDelete(funcs[HTTP::DELETE]);
+    mtx.lock(); ++SYS::registry.controllerCount; mtx.unlock();
+    mapGet(restMap[HTTP::GET]);
+    mapPut(restMap[HTTP::PUT]);
+    mapPost(restMap[HTTP::POST]);
+    mapPatch(restMap[HTTP::PATCH]);
+    mapDelete(restMap[HTTP::DELETE]);
 }
 
 Controller::~Controller() {
-    if (funcs) { delete [] funcs; }
-    mtx.lock(); --REGISTRY::handlerCount; mtx.unlock();
+    if (restMap) { delete [] restMap; }
+    mtx.lock(); --SYS::registry.controllerCount; mtx.unlock();
 }
 
-void Controller::mapGet(FuncMap & gets) {
+void Controller::mapGet(RestMap & gets) {
     gets.emplace ("/",
             [&](HTTPServerRequest& request, HTTPServerResponse& response)-> void {
             Object::Ptr ret = new Object;
@@ -29,7 +29,6 @@ void Controller::mapGet(FuncMap & gets) {
             ret->set("host", request.getHost());
             ret->set("uri", request.getURI());
             ret->set("method", request.getMethod());
-            ret->set("request_id", id);
             ret->set("response", "hello world!");
 
             Object::Ptr req = parser.parse(request.stream()).extract<Object::Ptr>();
@@ -47,40 +46,40 @@ void Controller::mapGet(FuncMap & gets) {
     );
 
     gets.emplace ("/tenant",
-            [&](HTTPServerRequest& request, HTTPServerResponse& response)-> void {
+        [&](HTTPServerRequest& request, HTTPServerResponse& response)-> void {
             Object::Ptr ret = new Object;
             try {
-            response.setStatus(HTTPResponse::HTTP_OK);
-            response.setContentType("application/json");
+                response.setStatus(HTTPResponse::HTTP_OK);
+                response.setContentType("application/json");
 
-            Object::Ptr req = parser.parse(request.stream()).extract<Object::Ptr>();
-            ret->set("request", req);
+                Object::Ptr req = parser.parse(request.stream()).extract<Object::Ptr>();
+                ret->set("request", req);
 
-            int tenantId = req->getValue<int>("tenant_id");
-            DAO::Tenant tenant; db.popById(tenantId, tenant);
+                int tenantId = req->getValue<int>("tenant_id");
+                DAO::Tenant tenant; db.popById(tenantId, tenant);
 
-            Object::Ptr resp = new Object;
-            resp->set("tenant_id", tenant.id);
-            resp->set("tenant_name", tenant.name);
-            ret->set("response", resp);
+                Object::Ptr resp = new Object;
+                resp->set("tenant_id", tenant.id);
+                resp->set("tenant_name", tenant.name);
+                ret->set("response", resp);
             } catch (Poco::Data::MySQL::ConnectionException& e) {
-            ret->set("response", e.what());
+                ret->set("response", e.what());
             } catch (Poco::Data::MySQL::StatementException& e) {
-            ret->set("response", e.what());
+                ret->set("response", e.what());
             } catch (Poco::JSON::JSONException& e) {
-            ret->set("response", e.what());
+                ret->set("response", e.what());
             } catch (std::exception& e) {
-            ret->set("response", e.what());
+                ret->set("response", e.what());
             }
 
             ostream& os = response.send();
             ret->stringify(os);
             os.flush();
-            }
+        }
     );
 
     gets.emplace ("/tenants",
-            [&](HTTPServerRequest& request, HTTPServerResponse& response)-> void {
+        [&](HTTPServerRequest& request, HTTPServerResponse& response)-> void {
             ostream& os = response.send();
             OStreamWrapper osw(os);
 
@@ -88,20 +87,20 @@ void Controller::mapGet(FuncMap & gets) {
             Writer<OStreamWrapper> writer(osw);
 
             try {
-            response.setStatus(HTTPResponse::HTTP_OK);
-            response.setContentType("application/json");
+                response.setStatus(HTTPResponse::HTTP_OK);
+                response.setContentType("application/json");
 
-            vector<DAO::Tenant> tenants; db.popAll(tenants);
+                vector<DAO::Tenant> tenants; db.popAll(tenants);
 
-            writer.StartArray();
-            for (DAO::Tenant const & tenant : tenants) {
-                writer.StartObject();
-                writer.Key("tenant_id"); writer.Uint(tenant.id);
-                writer.Key("tenant_name"); writer.String(tenant.name.c_str());
-                writer.EndObject();
-            }
-            writer.EndArray();
-            os.flush();
+                writer.StartArray();
+                for (DAO::Tenant const & tenant : tenants) {
+                    writer.StartObject();
+                    writer.Key("tenant_id"); writer.Uint(tenant.id);
+                    writer.Key("tenant_name"); writer.String(tenant.name.c_str());
+                    writer.EndObject();
+                }
+                writer.EndArray();
+                os.flush();
             } catch (Poco::Data::MySQL::ConnectionException& e) {
                 writer.StartObject();
                 writer.Key("response"); writer.String(e.what());
@@ -119,12 +118,12 @@ void Controller::mapGet(FuncMap & gets) {
                 writer.Key("response"); writer.String(e.what());
                 writer.EndObject();
             }
-            }
+        }
     );
 
 }
 
-void Controller::mapPut(FuncMap & puts) { }
-void Controller::mapPost(FuncMap & posts) { }
-void Controller::mapPatch(FuncMap & patches) { }
-void Controller::mapDelete(FuncMap & deletes) { }
+void Controller::mapPut(RestMap & puts) { }
+void Controller::mapPost(RestMap & posts) { }
+void Controller::mapPatch(RestMap & patches) { }
+void Controller::mapDelete(RestMap & deletes) { }
