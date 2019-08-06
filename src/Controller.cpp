@@ -7,11 +7,7 @@ Controller::Controller() :
     HTTPRequestHandler()
 {
     mtx.lock(); ++SYS::registry.controllerCount; mtx.unlock();
-    mapGet(restful[HTTP::GET]);
-    mapPut(restful[HTTP::PUT]);
-    mapPost(restful[HTTP::POST]);
-    mapPatch(restful[HTTP::PATCH]);
-    mapDelete(restful[HTTP::DELETE]);
+    wire();
 }
 
 Controller::~Controller() {
@@ -19,9 +15,8 @@ Controller::~Controller() {
     mtx.lock(); --SYS::registry.controllerCount; mtx.unlock();
 }
 
-void Controller::mapGet(RestMap & http_get) {
-    ROUTE(http_get)
-        ("/",
+void Controller::wire() {
+    ROUTE(HTTP::GET, "/",
         [&](HTTPServerRequest& request, HTTPServerResponse& response)-> void {
             Object::Ptr ret = new Object;
             try {
@@ -46,8 +41,7 @@ void Controller::mapGet(RestMap & http_get) {
         }
     );
 
-    ROUTE(http_get)
-        ("/tenant",
+    ROUTE(HTTP::GET, "/tenant",
         [&](HTTPServerRequest& request, HTTPServerResponse& response)-> void {
             Object::Ptr ret = new Object;
             try {
@@ -80,8 +74,7 @@ void Controller::mapGet(RestMap & http_get) {
         }
     );
 
-    ROUTE(http_get)
-        ("/tenants",
+    ROUTE(HTTP::GET, "/tenants",
         [&](HTTPServerRequest& request, HTTPServerResponse& response)-> void {
             response.setStatus(HTTPResponse::HTTP_OK);
             response.setContentType("application/json");
@@ -115,8 +108,3 @@ void Controller::mapGet(RestMap & http_get) {
     );
 
 }
-
-void Controller::mapPut(RestMap & http_put) { }
-void Controller::mapPost(RestMap & http_post) { }
-void Controller::mapPatch(RestMap & http_patch) { }
-void Controller::mapDelete(RestMap & http_delete) { }

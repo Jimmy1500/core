@@ -22,8 +22,8 @@
 #include "Repository.h"
 
 #ifndef ROUTE
-#define ROUTE(MAP)  \
-        MAP.emplace
+#define ROUTE(METHOD, ENDPOINT, FUNCTOR)  \
+        restful[METHOD].emplace (ENDPOINT, FUNCTOR)
 #endif
 
 #ifndef JSON_WRITE
@@ -91,11 +91,7 @@ class Controller : public HTTPRequestHandler {
         }
 
         // RESTful
-        void mapGet(RestMap &);
-        void mapPut(RestMap &);
-        void mapPost(RestMap &);
-        void mapPatch(RestMap &);
-        void mapDelete(RestMap &);
+        void wire();
 };
 
 #endif // REQUEST_HANDLER_H
