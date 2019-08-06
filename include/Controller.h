@@ -31,13 +31,13 @@ typedef map<string, function<void(HTTPServerRequest& request, HTTPServerResponse
 
 class Controller : public HTTPRequestHandler {
     private:
-        static size_t requestHandlerCount;
+        size_t id;
         Poco::JSON::Parser parser;
         Repository db;
         FuncMap * funcs;
 
     public:
-        Controller();
+        Controller(size_t);
         ~Controller();
 
         virtual void handleRequest(HTTPServerRequest& request, HTTPServerResponse& response) {
@@ -47,12 +47,11 @@ class Controller : public HTTPRequestHandler {
                 func(request, response);
             } else {
                 ostream& os = response.send();
-                os << "NOT IMPLEMENTED";
+                os << "NOT IMPLEMENTED" << endl;
                 os.flush();
             }
             mtx.lock();
-            cout << "Response # " << requestHandlerCount
-                << " sent for URI=" << request.getURI() << endl;
+            cout << "Response # " << id << " sent for URI=" << request.getURI() << endl;
             mtx.unlock();
         }
 

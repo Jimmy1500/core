@@ -7,10 +7,13 @@
 
 class RequestHandlerFactory : public HTTPRequestHandlerFactory
 {
+    static size_t requestCount;
     public:
         virtual HTTPRequestHandler* createRequestHandler(const HTTPServerRequest &) {
-            return new Controller;
+            mtx.lock(); ++requestCount; mtx.unlock();
+            return new Controller(requestCount);
         }
 };
 
+size_t RequestHandlerFactory::requestCount = 0;
 #endif

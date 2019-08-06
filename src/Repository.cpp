@@ -1,7 +1,6 @@
 #include "Repository.h"
 
 unique_ptr<SessionPool> Repository::repositoryPool = nullptr;
-size_t Repository::repositoryCount = 0;
 size_t Repository::repositoryMask = 0;
 
 void Repository::popById(int id, DAO::Tenant& tenant) {

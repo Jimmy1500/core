@@ -1,14 +1,12 @@
 #include "Controller.h"
 
-size_t Controller::requestHandlerCount = 0;
-
-Controller::Controller() :
+Controller::Controller(size_t id) :
+    id(id),
     parser(),
     db(),
     funcs(new FuncMap[HTTP::NUM_HTTP_METHODS]),
     HTTPRequestHandler()
 {
-    mtx.lock(); ++requestHandlerCount; mtx.unlock();
     mapGet(funcs[HTTP::GET]);
     mapPut(funcs[HTTP::PUT]);
     mapPost(funcs[HTTP::POST]);
@@ -30,7 +28,7 @@ void Controller::mapGet(FuncMap & gets) {
             ret->set("host", request.getHost());
             ret->set("uri", request.getURI());
             ret->set("method", request.getMethod());
-            ret->set("count", requestHandlerCount);
+            ret->set("request_id", id);
             ret->set("response", "hello world!");
 
             Object::Ptr req = parser.parse(request.stream()).extract<Object::Ptr>();

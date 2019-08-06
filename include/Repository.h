@@ -16,23 +16,14 @@ using namespace Poco::Data;
 class Repository {
     private:
         static unique_ptr<SessionPool> repositoryPool;
-        static size_t repositoryCount;
         static size_t repositoryMask;
     public:
         Repository() {
             Poco::Data::MySQL::Connector::registerConnector();
-            mtx.lock();
-            ++repositoryCount;
-            cout << MySQL::Connector::KEY << " connector # " << repositoryCount << " registered!" << endl;
-            mtx.unlock();
         }
 
         ~Repository() {
             Poco::Data::MySQL::Connector::unregisterConnector();
-            mtx.lock();
-            cout << MySQL::Connector::KEY << " connector # " << repositoryCount << " unregistered!" << endl;
-            --repositoryCount;
-            mtx.unlock();
         }
 
         static inline size_t existsPool() {
