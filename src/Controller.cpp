@@ -18,10 +18,10 @@ Controller::~Controller() {
 void Controller::wire() {
     ROUTE(HTTP::GET, "/",
         [&](HTTPServerRequest& request, HTTPServerResponse& response)-> void {
+            response.setStatus(HTTPResponse::HTTP_OK);
+            response.setContentType("application/json");
             Object::Ptr ret = new Object;
             try {
-                response.setStatus(HTTPResponse::HTTP_OK);
-                response.setContentType("application/json");
                 ret->set("host", request.getHost());
                 ret->set("uri", request.getURI());
                 ret->set("method", request.getMethod());
@@ -43,11 +43,10 @@ void Controller::wire() {
 
     ROUTE(HTTP::GET, "/tenant",
         [&](HTTPServerRequest& request, HTTPServerResponse& response)-> void {
+            response.setStatus(HTTPResponse::HTTP_OK);
+            response.setContentType("application/json");
             Object::Ptr ret = new Object;
             try {
-                response.setStatus(HTTPResponse::HTTP_OK);
-                response.setContentType("application/json");
-
                 Object::Ptr req = parser.parse(request.stream()).extract<Object::Ptr>();
                 ret->set("request", req);
 
