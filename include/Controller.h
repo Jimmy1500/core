@@ -75,6 +75,8 @@ class Controller : public HTTPRequestHandler {
         Controller();
         ~Controller();
 
+        // RESTful
+        virtual void wire();
         virtual void handleRequest(HTTPServerRequest& request, HTTPServerResponse& response) {
             const size_t method(HTTP::Methods[request.getMethod()]);
             auto rest = restful[method][request.getURI()];
@@ -90,8 +92,6 @@ class Controller : public HTTPRequestHandler {
             mtx.unlock();
         }
 
-        // RESTful
-        void wire();
 };
 
 #endif // REQUEST_HANDLER_H
