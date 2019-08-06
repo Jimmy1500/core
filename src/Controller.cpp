@@ -16,6 +16,7 @@ Controller::Controller(size_t id) :
 
 Controller::~Controller() {
     if (funcs) { delete [] funcs; }
+    mtx.lock(); --REGISTRY::handlerCount; mtx.unlock();
 }
 
 void Controller::mapGet(FuncMap & gets) {

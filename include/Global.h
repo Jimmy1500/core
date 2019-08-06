@@ -46,6 +46,10 @@ namespace SYS {
     };
 }
 
+namespace REGISTRY {
+    static size_t handlerCount = 0;
+}
+
 namespace BIN {
     static inline size_t isDirty(size_t mask, size_t flag){ return mask & flag; }
     static inline void clearDirty(size_t mask, size_t flag){ mask &= ~flag; }
