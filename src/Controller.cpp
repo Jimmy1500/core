@@ -3,49 +3,51 @@
 Controller::Controller() :
     parser(),
     db(),
-    restMap(new RestMap[HTTP::NUM_HTTP_METHODS]),
+    restful(new RestMap[HTTP::NUM_HTTP_METHODS]),
     HTTPRequestHandler()
 {
     mtx.lock(); ++SYS::registry.controllerCount; mtx.unlock();
-    mapGet(restMap[HTTP::GET]);
-    mapPut(restMap[HTTP::PUT]);
-    mapPost(restMap[HTTP::POST]);
-    mapPatch(restMap[HTTP::PATCH]);
-    mapDelete(restMap[HTTP::DELETE]);
+    mapGet(restful[HTTP::GET]);
+    mapPut(restful[HTTP::PUT]);
+    mapPost(restful[HTTP::POST]);
+    mapPatch(restful[HTTP::PATCH]);
+    mapDelete(restful[HTTP::DELETE]);
 }
 
 Controller::~Controller() {
-    if (restMap) { delete [] restMap; }
+    if (restful) { delete [] restful; }
     mtx.lock(); --SYS::registry.controllerCount; mtx.unlock();
 }
 
-void Controller::mapGet(RestMap & gets) {
-    gets.emplace ("/",
-            [&](HTTPServerRequest& request, HTTPServerResponse& response)-> void {
+void Controller::mapGet(RestMap & http_get) {
+    ROUTE(http_get)
+        ("/",
+        [&](HTTPServerRequest& request, HTTPServerResponse& response)-> void {
             Object::Ptr ret = new Object;
             try {
-            response.setStatus(HTTPResponse::HTTP_OK);
-            response.setContentType("application/json");
-            ret->set("host", request.getHost());
-            ret->set("uri", request.getURI());
-            ret->set("method", request.getMethod());
-            ret->set("response", "hello world!");
+                response.setStatus(HTTPResponse::HTTP_OK);
+                response.setContentType("application/json");
+                ret->set("host", request.getHost());
+                ret->set("uri", request.getURI());
+                ret->set("method", request.getMethod());
+                ret->set("response", "hello world!");
 
-            Object::Ptr req = parser.parse(request.stream()).extract<Object::Ptr>();
-            ret->set("request", req);
+                Object::Ptr req = parser.parse(request.stream()).extract<Object::Ptr>();
+                ret->set("request", req);
             } catch (Poco::JSON::JSONException& e) {
-            ret->set("response", e.what());
+                ret->set("request", e.what());
             } catch (std::exception& e) {
-            ret->set("response", e.what());
+                ret->set("response", e.what());
             }
 
             ostream& os = response.send();
             ret->stringify(os);
             os.flush();
-            }
+        }
     );
 
-    gets.emplace ("/tenant",
+    ROUTE(http_get)
+        ("/tenant",
         [&](HTTPServerRequest& request, HTTPServerResponse& response)-> void {
             Object::Ptr ret = new Object;
             try {
@@ -67,7 +69,7 @@ void Controller::mapGet(RestMap & gets) {
             } catch (Poco::Data::MySQL::StatementException& e) {
                 ret->set("response", e.what());
             } catch (Poco::JSON::JSONException& e) {
-                ret->set("response", e.what());
+                ret->set("request", e.what());
             } catch (std::exception& e) {
                 ret->set("response", e.what());
             }
@@ -78,7 +80,8 @@ void Controller::mapGet(RestMap & gets) {
         }
     );
 
-    gets.emplace ("/tenants",
+    ROUTE(http_get)
+        ("/tenants",
         [&](HTTPServerRequest& request, HTTPServerResponse& response)-> void {
             ostream& os = response.send();
             OStreamWrapper osw(os);
@@ -123,7 +126,7 @@ void Controller::mapGet(RestMap & gets) {
 
 }
 
-void Controller::mapPut(RestMap & puts) { }
-void Controller::mapPost(RestMap & posts) { }
-void Controller::mapPatch(RestMap & patches) { }
-void Controller::mapDelete(RestMap & deletes) { }
+void Controller::mapPut(RestMap & http_put) { }
+void Controller::mapPost(RestMap & http_post) { }
+void Controller::mapPatch(RestMap & http_patch) { }
+void Controller::mapDelete(RestMap & http_delete) { }

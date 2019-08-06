@@ -21,6 +21,11 @@
 
 #include "Repository.h"
 
+#ifndef ROUTE
+#define ROUTE(MAP)  \
+        MAP.emplace
+#endif
+
 using namespace std;
 using namespace Poco::Net;
 using namespace Poco::JSON;
@@ -33,7 +38,7 @@ class Controller : public HTTPRequestHandler {
     private:
         Poco::JSON::Parser parser;
         Repository db;
-        RestMap * restMap;
+        RestMap * restful;
 
     public:
         Controller();
@@ -41,7 +46,7 @@ class Controller : public HTTPRequestHandler {
 
         virtual void handleRequest(HTTPServerRequest& request, HTTPServerResponse& response) {
             const size_t method(HTTP::Methods[request.getMethod()]);
-            auto rest = restMap[method][request.getURI()];
+            auto rest = restful[method][request.getURI()];
             if (rest) {
                 rest(request, response);
             } else {
