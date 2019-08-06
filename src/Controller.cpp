@@ -83,41 +83,32 @@ void Controller::mapGet(RestMap & http_get) {
     ROUTE(http_get)
         ("/tenants",
         [&](HTTPServerRequest& request, HTTPServerResponse& response)-> void {
+            response.setStatus(HTTPResponse::HTTP_OK);
+            response.setContentType("application/json");
+
             ostream& os = response.send();
-            OStreamWrapper osw(os);
-
-            //PrettyWriter<OStreamWrapper> writer(osw);
-            Writer<OStreamWrapper> writer(osw);
+            // JSON_WRITE(os, rapidjson::OStreamWrapper, rapidjson::PrettyWriter)
+            JSON_WRITE(os, rapidjson::OStreamWrapper, rapidjson::Writer)
             try {
-                response.setStatus(HTTPResponse::HTTP_OK);
-                response.setContentType("application/json");
+                vector<DAO::Tenant> tenants;
+                db.popAll(tenants);
 
-                vector<DAO::Tenant> tenants; db.popAll(tenants);
-
-                writer.StartArray();
-                for (DAO::Tenant const & tenant : tenants) {
-                    writer.StartObject();
-                    writer.Key("tenant_id"); writer.Uint(tenant.id);
-                    writer.Key("tenant_name"); writer.String(tenant.name.c_str());
-                    writer.EndObject();
-                }
-                writer.EndArray();
+                JSON_ARR(
+                    FOREACH(const auto& tenant : tenants,
+                        JSON_OBJ(
+                            JSON_FIELD("tenant_id", tenant.id, Uint);
+                            JSON_FIELD("tenant_name", tenant.name.c_str(), String);
+                        )
+                    )
+                )
             } catch (Poco::Data::MySQL::ConnectionException& e) {
-                writer.StartObject();
-                writer.Key("response"); writer.String(e.what());
-                writer.EndObject();
+                JSON_OBJ( JSON_FIELD("response", e.what(), String) )
             } catch (Poco::Data::MySQL::StatementException& e) {
-                writer.StartObject();
-                writer.Key("response"); writer.String(e.what());
-                writer.EndObject();
+                JSON_OBJ( JSON_FIELD("response", e.what(), String) )
             } catch (Poco::JSON::JSONException& e) {
-                writer.StartObject();
-                writer.Key("response"); writer.String(e.what());
-                writer.EndObject();
+                JSON_OBJ( JSON_FIELD("response", e.what(), String) )
             } catch (std::exception& e) {
-                writer.StartObject();
-                writer.Key("response"); writer.String(e.what());
-                writer.EndObject();
+                JSON_OBJ( JSON_FIELD("response", e.what(), String) )
             }
             os.flush();
         }

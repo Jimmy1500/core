@@ -26,6 +26,37 @@
         MAP.emplace
 #endif
 
+#ifndef JSON_WRITE
+#define JSON_WRITE(TO, WRAPPER, WRITER)     \
+        WRAPPER wrapper(TO);                \
+        WRITER<WRAPPER> writer(wrapper);
+#endif
+
+#ifndef JSON_FIELD
+#define JSON_FIELD(KEY, VALUE, TYPE)   \
+        writer.Key(KEY);               \
+        writer.TYPE(VALUE);
+#endif
+
+#ifndef JSON_OBJ
+#define JSON_OBJ(O)             \
+        writer.StartObject();   \
+        O                       \
+        writer.EndObject();
+#endif
+
+#ifndef JSON_ARR
+#define JSON_ARR(A)             \
+        writer.StartArray();    \
+        A                       \
+        writer.EndArray();
+#endif
+
+#ifndef FOREACH
+#define FOREACH(X, A)   \
+        for (X) { A }
+#endif
+
 using namespace std;
 using namespace Poco::Net;
 using namespace Poco::JSON;
