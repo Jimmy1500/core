@@ -69,8 +69,8 @@ class Controller : public HTTPRequestHandler {
     private:
         Poco::JSON::Parser parser;
         Repository db;
+    protected:
         RestMap * restful;
-
     public:
         Controller();
         ~Controller();
