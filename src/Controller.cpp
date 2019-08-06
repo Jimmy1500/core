@@ -88,7 +88,6 @@ void Controller::mapGet(RestMap & http_get) {
 
             //PrettyWriter<OStreamWrapper> writer(osw);
             Writer<OStreamWrapper> writer(osw);
-
             try {
                 response.setStatus(HTTPResponse::HTTP_OK);
                 response.setContentType("application/json");
@@ -103,7 +102,6 @@ void Controller::mapGet(RestMap & http_get) {
                     writer.EndObject();
                 }
                 writer.EndArray();
-                os.flush();
             } catch (Poco::Data::MySQL::ConnectionException& e) {
                 writer.StartObject();
                 writer.Key("response"); writer.String(e.what());
@@ -121,6 +119,7 @@ void Controller::mapGet(RestMap & http_get) {
                 writer.Key("response"); writer.String(e.what());
                 writer.EndObject();
             }
+            os.flush();
         }
     );
 
