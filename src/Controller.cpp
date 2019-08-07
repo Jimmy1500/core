@@ -15,6 +15,21 @@ Controller::~Controller() {
     mtx.lock(); --SYS::registry.controllerCount; mtx.unlock();
 }
 
+void Controller::handleRequest(HTTPServerRequest& request, HTTPServerResponse& response) {
+    const size_t method(HTTP::Methods[request.getMethod()]);
+    auto f = restMap[method][request.getURI()];
+    if (f) {
+        f(request, response);
+    } else {
+        ostream& os = response.send();
+        os << request.getHost() << request.getURI() << " NOT IMPLEMENTED" << endl;
+        os.flush();
+    }
+    mtx.lock();
+    cout << "Response sent for URI=" << request.getURI() << endl;
+    mtx.unlock();
+}
+
 void Controller::wireRoutes() {
     ROUTE(HTTP::GET, "/",
         [&](HTTPServerRequest& request, HTTPServerResponse& response)-> void {

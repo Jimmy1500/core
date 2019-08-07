@@ -75,23 +75,8 @@ class Controller : public HTTPRequestHandler {
         Controller();
         ~Controller();
 
-        // RESTful
-        virtual void wireRoutes();
-        virtual void handleRequest(HTTPServerRequest& request, HTTPServerResponse& response) {
-            const size_t method(HTTP::Methods[request.getMethod()]);
-            auto rest = restMap[method][request.getURI()];
-            if (rest) {
-                rest(request, response);
-            } else {
-                ostream& os = response.send();
-                os << request.getHost() << request.getURI() << " NOT IMPLEMENTED" << endl;
-                os.flush();
-            }
-            mtx.lock();
-            cout << "Response sent for URI=" << request.getURI() << endl;
-            mtx.unlock();
-        }
-
+        virtual void handleRequest(HTTPServerRequest &, HTTPServerResponse &);
+        virtual void wireRoutes(); // RESTful
 };
 
 #endif // REQUEST_HANDLER_H
