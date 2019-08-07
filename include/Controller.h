@@ -27,8 +27,8 @@
 #endif
 
 #ifndef JSON_WRITE
-#define JSON_WRITE(TO, WRAPPER, WRITER)             \
-        WRAPPER rapidjson_wrapper(TO);              \
+#define JSON_WRITE(TARGET, WRAPPER, WRITER)             \
+        WRAPPER rapidjson_wrapper(TARGET);              \
         WRITER<WRAPPER> rapidjson_writer(rapidjson_wrapper);
 #endif
 
