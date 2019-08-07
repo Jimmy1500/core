@@ -22,35 +22,41 @@ class ServerApp : public ServerApplication
                 cout << "### configuration loaded : application.properties" << endl;
 
                 if (!Repository::existsPool()) {
-                    string user(getenv( config().getString("database.username", "DB_USERNAME").c_str() ));
-                    string password(getenv( config().getString("database.password", "DB_PASSWORD").c_str() ));
-                    string db(getenv( config().getString("database.name", "DB_DATABASE").c_str() ));
+                    string connector( config().getString("database.type", Poco::Data::MySQL::Connector::KEY) );
                     string port( config().getString("database.port", "3306") );
 
-                    string host="127.0.0.1", compress="true", autoReconnect="true";
+                    string dbname(getenv( config().getString("database.name", "DB_DATABASE").c_str() ));
+                    string user(getenv( config().getString("database.username", "DB_USERNAME").c_str() ));
+                    string password(getenv( config().getString("database.password", "DB_PASSWORD").c_str() ));
+
                     string connectionString(
-                            "host=" + host +
-                            ";user=" + user +
-                            ";password=" + password +
-                            ";db=" + db +
-                            ";port=" + port +
-                            ";compress=" + compress +
-                            ";auto-reconnect=" + autoReconnect + ";");
+                            "host=127.0.0.1;port=" + port + ";user=" + user + ";password=" + password + ";db=" + dbname +
+                            ";compress=true;auto-reconnect=true;");
                     size_t minSessions = 1, maxSessions = 32, idleTime = 60;
 
-                    Repository::init(Poco::Data::MySQL::Connector::KEY, connectionString, minSessions, maxSessions, idleTime);
+                    Repository::initialize(
+                            connector,
+                            connectionString,
+                            minSessions,
+                            maxSessions,
+                            idleTime);
+                    cout << "### Database loaded: [type=MySQL, credential=" << connectionString << "]" << endl;
                 }
             } catch (Poco::FileNotFoundException& e) {
                 cout << "### " << e.what() << " : application.properties, try: `make sync` in build directory to resolve" << endl;
                 cout << "### using default configurations" << endl;
-            } catch (std::exception& e ) {
+            } catch (Poco::Data::DataException& e) {
+                cout << "### " << e.what() << endl;
+            } catch (Poco::Exception& e) {
+                cout << "### " << e.what() << endl;
+            } catch (std::exception& e) {
                 cout << "### " << e.what() << endl;
             }
             ServerApplication::initialize(self);
         }
 
         void uninitialize() {
-            Repository::reset();
+            Repository::uninitialize();
             ServerApplication::uninitialize();
         }
 

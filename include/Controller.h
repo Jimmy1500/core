@@ -23,33 +23,33 @@
 
 #ifndef ROUTE
 #define ROUTE(METHOD, ENDPOINT, FUNCTOR)  \
-        restful[METHOD].emplace (ENDPOINT, FUNCTOR)
+        restMap[METHOD].emplace(ENDPOINT, FUNCTOR)
 #endif
 
 #ifndef JSON_WRITE
-#define JSON_WRITE(TO, WRAPPER, WRITER)     \
-        WRAPPER wrapper(TO);                \
-        WRITER<WRAPPER> writer(wrapper);
+#define JSON_WRITE(TO, WRAPPER, WRITER)             \
+        WRAPPER rapidjson_wrapper(TO);              \
+        WRITER<WRAPPER> rapidjson_writer(rapidjson_wrapper);
 #endif
 
 #ifndef JSON_FIELD
-#define JSON_FIELD(KEY, VALUE, TYPE)   \
-        writer.Key(KEY);               \
-        writer.TYPE(VALUE);
+#define JSON_FIELD(KEY, VALUE, TYPE)    \
+        rapidjson_writer.Key(KEY);      \
+        rapidjson_writer.TYPE(VALUE);
 #endif
 
 #ifndef JSON_OBJ
-#define JSON_OBJ(O)             \
-        writer.StartObject();   \
-        O                       \
-        writer.EndObject();
+#define JSON_OBJ(O)                         \
+        rapidjson_writer.StartObject();     \
+        O                                   \
+        rapidjson_writer.EndObject();
 #endif
 
 #ifndef JSON_ARR
-#define JSON_ARR(A)             \
-        writer.StartArray();    \
-        A                       \
-        writer.EndArray();
+#define JSON_ARR(A)                         \
+        rapidjson_writer.StartArray();      \
+        A                                   \
+        rapidjson_writer.EndArray();
 #endif
 
 #ifndef FOREACH
@@ -68,18 +68,18 @@ typedef map<string, function<void(HTTPServerRequest&, HTTPServerResponse&)>> Res
 class Controller : public HTTPRequestHandler {
     private:
         Poco::JSON::Parser parser;
-        Repository db;
+        Repository database;
     protected:
-        RestMap * restful;
+        RestMap * restMap;
     public:
         Controller();
         ~Controller();
 
         // RESTful
-        virtual void wire();
+        virtual void wireRoutes();
         virtual void handleRequest(HTTPServerRequest& request, HTTPServerResponse& response) {
             const size_t method(HTTP::Methods[request.getMethod()]);
-            auto rest = restful[method][request.getURI()];
+            auto rest = restMap[method][request.getURI()];
             if (rest) {
                 rest(request, response);
             } else {

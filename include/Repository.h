@@ -29,23 +29,27 @@ class Repository {
             return BIN::isDirty(SYS::registry.repositoryMask, SYS::DB_SESSION_POOL);
         }
 
-        static inline void init(string& connector, string& connectionString,
+        static inline void initialize(string& connector, string& connectionString,
                 size_t minSessions, size_t maxSessions, size_t idleTime)
         {
             if (!existsPool()) {
                 repositoryPool = make_unique<SessionPool>(
-                        connector, connectionString, minSessions, maxSessions, idleTime);
+                        connector,
+                        connectionString,
+                        minSessions,
+                        maxSessions,
+                        idleTime);
                 BIN::markDirty(SYS::registry.repositoryMask, SYS::DB_SESSION_POOL);
+                cout << "### Database session pool created!" << endl;
             }
-            cout << "### Database session pool created!" << endl;
         }
 
-        static inline void reset() {
+        static inline void uninitialize() {
             if (existsPool()) {
                 repositoryPool.reset();
                 BIN::clearDirty(SYS::registry.repositoryMask, SYS::DB_SESSION_POOL);
+                cout << "### Database session pool destroyed!" << endl;
             }
-            cout << "### Database session pool destroyed!" << endl;
         }
 
         void popById(int, DAO::Tenant &);

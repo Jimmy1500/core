@@ -2,20 +2,20 @@
 
 Controller::Controller() :
     parser(),
-    db(),
-    restful(new RestMap[HTTP::NUM_HTTP_METHODS]),
+    database(),
+    restMap(new RestMap[HTTP::NUM_HTTP_METHODS]),
     HTTPRequestHandler()
 {
     mtx.lock(); ++SYS::registry.controllerCount; mtx.unlock();
-    wire();
+    wireRoutes();
 }
 
 Controller::~Controller() {
-    if (restful) { delete [] restful; }
+    if (restMap) { delete [] restMap; }
     mtx.lock(); --SYS::registry.controllerCount; mtx.unlock();
 }
 
-void Controller::wire() {
+void Controller::wireRoutes() {
     ROUTE(HTTP::GET, "/",
         [&](HTTPServerRequest& request, HTTPServerResponse& response)-> void {
             response.setStatus(HTTPResponse::HTTP_OK);
@@ -51,7 +51,7 @@ void Controller::wire() {
                 ret->set("request", req);
 
                 int tenantId = req->getValue<int>("tenant_id");
-                DAO::Tenant tenant; db.popById(tenantId, tenant);
+                DAO::Tenant tenant; database.popById(tenantId, tenant);
 
                 Object::Ptr resp = new Object;
                 resp->set("tenant_id", tenant.id);
@@ -63,6 +63,8 @@ void Controller::wire() {
                 ret->set("response", e.what());
             } catch (Poco::JSON::JSONException& e) {
                 ret->set("request", e.what());
+            } catch (Poco::Exception& e) {
+                ret->set("response", e.what());
             } catch (std::exception& e) {
                 ret->set("response", e.what());
             }
@@ -83,7 +85,7 @@ void Controller::wire() {
             JSON_WRITE(os, rapidjson::OStreamWrapper, rapidjson::Writer)
             try {
                 vector<DAO::Tenant> tenants;
-                db.popAll(tenants);
+                database.popAll(tenants);
 
                 JSON_ARR(
                     FOREACH(const auto& tenant : tenants,
@@ -98,6 +100,8 @@ void Controller::wire() {
             } catch (Poco::Data::MySQL::StatementException& e) {
                 JSON_OBJ( JSON_FIELD("response", e.what(), String) )
             } catch (Poco::JSON::JSONException& e) {
+                JSON_OBJ( JSON_FIELD("response", e.what(), String) )
+            } catch (Poco::Exception& e) {
                 JSON_OBJ( JSON_FIELD("response", e.what(), String) )
             } catch (std::exception& e) {
                 JSON_OBJ( JSON_FIELD("response", e.what(), String) )
