@@ -42,6 +42,20 @@ namespace DAO { // Data Access Objects
         int         id;
         std::string name;
     };
+
+    struct User {
+        User() = default;
+        User(std::string& id, std::string& firstName, std::string& middleName, std::string& lastName) :
+            id(id),
+            firstName(firstName),
+            middleName(middleName),
+            lastName(lastName) { }
+
+        std::string id;
+        std::string firstName;
+        std::string middleName;
+        std::string lastName;
+    };
 }
 
 namespace SYS {
