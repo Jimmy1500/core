@@ -52,11 +52,6 @@
         rapidjson_writer.EndArray();
 #endif
 
-#ifndef FOREACH
-#define FOREACH(X, A)   \
-        for (X) { A }
-#endif
-
 using namespace std;
 using namespace Poco::Net;
 using namespace Poco::JSON;
