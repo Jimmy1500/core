@@ -12,6 +12,7 @@
 #define FOREACH(X, A)   \
         for (X) { A }
 #endif
+
 static std::mutex mtx;
 
 namespace HTTP {
