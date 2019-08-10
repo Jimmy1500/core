@@ -2,11 +2,8 @@
 #define SERVER_APP_H
 
 #include <Poco/Net/HTTPServer.h>
-#include <Poco/Net/HTTPResponse.h>
-#include <Poco/Net/HTTPServerRequest.h>
-#include <Poco/Net/HTTPServerResponse.h>
-#include <Poco/Util/ServerApplication.h>
 #include <Poco/Net/ServerSocket.h>
+#include <Poco/Util/ServerApplication.h>
 
 #include "RequestHandlerFactory.h"
 
