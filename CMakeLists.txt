@@ -16,7 +16,7 @@ endif()
 
 include_directories(${PROJECT_SOURCE_DIR}/include)
 include_directories("${PROJECT_SOURCE_DIR}")
-include_directories(${Boost_INCLUDE_DIR})
+include_directories("/usr/local/include")
 
 file(GLOB SOURCES "src/*.cpp")
 add_executable(Main ${SOURCES})
