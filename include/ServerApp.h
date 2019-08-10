@@ -77,6 +77,7 @@ class ServerApp : public ServerApplication
                 server.stop();
             } catch (Poco::Data::DataException& e) {
                 cout << "### " << e.what() << endl;
+                return Application::EXIT_DATAERR;
             } catch (Poco::Exception& e) {
                 cout << "### " << e.what() << endl;
                 return Application::EXIT_SOFTWARE;
