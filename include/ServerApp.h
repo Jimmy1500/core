@@ -58,22 +58,33 @@ class ServerApp : public ServerApplication
         }
 
         int main(const vector<string> & inputs) {
-            if (inputs.size() > 0) {
-                cout << "### Starting server with inputs: ";
-                for (auto const & input : inputs) { cout << input << "; "; }
-                cout << endl;
+            try {
+                if (inputs.size() > 0) {
+                    cout << "### Starting server with inputs: ";
+                    for (auto const & input : inputs) { cout << input << "; "; }
+                    cout << endl;
+                }
+
+                ServerSocket socket(config().getInt("server.port", 8080)); // default port = 8080
+                HTTPServer server(new RequestHandlerFactory, socket, new HTTPServerParams);
+
+                server.start();
+                cout << "### Server started" << endl;
+
+                waitForTerminationRequest();  // wait for CTRL-C or kill
+
+                cout << "### Server shutting down..." << endl;
+                server.stop();
+            } catch (Poco::Data::DataException& e) {
+                cout << "### " << e.what() << endl;
+            } catch (Poco::Exception& e) {
+                cout << "### " << e.what() << endl;
+                return Application::EXIT_SOFTWARE;
+            } catch (std::exception& e) {
+                cout << "### " << e.what() << endl;
+                return Application::EXIT_UNAVAILABLE;
             }
-
-            ServerSocket socket(config().getInt("server.port", 8080)); // default port = 8080
-            HTTPServer server(new RequestHandlerFactory, socket, new HTTPServerParams);
-
-            server.start();
-            cout << "### Server started" << endl;
-
-            waitForTerminationRequest();  // wait for CTRL-C or kill
-
-            cout << "### Server shutting down..." << endl;
-            server.stop();
+            
 
             return Application::EXIT_OK;
         }
