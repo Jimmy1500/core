@@ -64,7 +64,6 @@ void Controller::wireRoutes() {
 
             istream& is = request.stream();
             ostream& os = response.send();
-            rapidjson::Document doc;
             try {
                 rapidjson::IStreamWrapper isw(is);
                 doc.ParseStream(isw);

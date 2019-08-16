@@ -64,6 +64,7 @@ typedef map<string, function<void(HTTPServerRequest&, HTTPServerResponse&)>> Res
 class Controller : public HTTPRequestHandler {
     private:
         Poco::JSON::Parser parser;
+        rapidjson::Document doc;
         Repository database;
     protected:
         RestMap * restMap;
