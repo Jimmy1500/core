@@ -35,6 +35,8 @@ void Controller::wireRoutes() {
         [&](HTTPServerRequest& request, HTTPServerResponse& response)-> void {
             response.setStatus(HTTPResponse::HTTP_OK);
             response.setContentType("application/json");
+            ostream& os = response.send();
+
             Object::Ptr ret = new Object;
             try {
                 ret->set("host", request.getHost());
@@ -50,8 +52,38 @@ void Controller::wireRoutes() {
                 ret->set("response", e.what());
             }
 
-            ostream& os = response.send();
             ret->stringify(os);
+            os.flush();
+        }
+    );
+
+    ROUTE(HTTP::GET, "/mirror",
+        [&](HTTPServerRequest& request, HTTPServerResponse& response)-> void {
+            response.setStatus(HTTPResponse::HTTP_OK);
+            response.setContentType("application/json");
+
+            istream& is = request.stream();
+            ostream& os = response.send();
+            rapidjson::Document doc;
+            try {
+                rapidjson::IStreamWrapper isw(is);
+                doc.ParseStream(isw);
+                if (doc.HasParseError()) {
+                    throw std::invalid_argument("input is not valid json");
+                }
+
+                // JSON_WRITE(os, rapidjson::OStreamWrapper, rapidjson::PrettyWriter)
+                JSON_WRITE(os, rapidjson::OStreamWrapper, rapidjson::Writer)
+                doc.Accept(writer);
+            } catch (std::exception& e) {
+                rapidjson::OStreamWrapper osw(os);
+                rapidjson::Writer<rapidjson::OStreamWrapper> writer(osw);
+                JSON_OBJ(
+                    JSON_FIELD("code", 1, Uint)
+                    JSON_FIELD("response", e.what(), String)
+                )
+            }
+
             os.flush();
         }
     );

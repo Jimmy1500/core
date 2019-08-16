@@ -28,35 +28,35 @@
 #endif
 
 #ifndef JSON_WRITE
-#define JSON_WRITE(TARGET, WRAPPER, WRITER)             \
-        WRAPPER rapidjson_wrapper(TARGET);              \
-        WRITER<WRAPPER> rapidjson_writer(rapidjson_wrapper);
+#define JSON_WRITE(TARGET, WRAPPER, WRITER)         \
+        WRAPPER TARGET_wrapper(TARGET);             \
+        WRITER<WRAPPER> writer(TARGET_wrapper);
 #endif
 
 #ifndef JSON_FIELD
 #define JSON_FIELD(KEY, VALUE, TYPE)    \
-        rapidjson_writer.Key(KEY);      \
-        rapidjson_writer.TYPE(VALUE);
+        writer.Key(KEY);                \
+        writer.TYPE(VALUE);
 #endif
 
 #ifndef JSON_OBJ
-#define JSON_OBJ(O)                         \
-        rapidjson_writer.StartObject();     \
-        O                                   \
-        rapidjson_writer.EndObject();
+#define JSON_OBJ(O)               \
+        writer.StartObject();     \
+        O                         \
+        writer.EndObject();
 #endif
 
 #ifndef JSON_ARR
-#define JSON_ARR(A)                         \
-        rapidjson_writer.StartArray();      \
-        A                                   \
-        rapidjson_writer.EndArray();
+#define JSON_ARR(A)               \
+        writer.StartArray();      \
+        A                         \
+        writer.EndArray();
 #endif
 
 using namespace std;
 using namespace Poco::Net;
-using namespace Poco::JSON;
 using namespace Poco::Dynamic;
+using namespace Poco::JSON;
 using namespace rapidjson;
 
 typedef map<string, function<void(HTTPServerRequest&, HTTPServerResponse&)>> RestMap;
