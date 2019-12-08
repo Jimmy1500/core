@@ -1,0 +1,32 @@
+version: '3'
+services:
+
+  backend:
+    container_name: container_backend
+    image: image_backend
+    environment:
+        - DB_CONNECTION=jdbc:postgresql://postgres:5432/postgres
+        - DB_USERNAME=postgres
+        - DB_PASSWORD=postgres
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    depends_on:
+      - postgres
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/code
+      - logvolume01:/var/log
+
+  postgres:
+    container_name: container_database
+    image: image_database
+    build:
+      context: ./
+      dockerfile: Dockerfile_DB
+    ports:
+      - "5432:5432"
+
+volumes:
+  logvolume01: {}
