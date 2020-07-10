@@ -26,9 +26,9 @@ class ServerApp : public ServerApplication
                     string user(getenv( config().getString("database.username", "DB_USERNAME").c_str() ));
                     string password(getenv( config().getString("database.password", "DB_PASSWORD").c_str() ));
 
-                    stringstream conn;
-                    conn << "host=127.0.0.1;port=" << port << ";user=" << user << ";password=" << password << ";db=" << dbname << ";compress=true;auto-reconnect=true;";
-                    string connection = conn.str();
+                    stringstream ss;
+                    ss << "host=127.0.0.1;port=" << port << ";user=" << user << ";password=" << password << ";db=" << dbname << ";compress=true;auto-reconnect=true;";
+                    string connection = ss.str();
                     size_t minSessions = 1, maxSessions = 32, idleTime = 60;
 
                     Repository::initialize(
