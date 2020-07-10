@@ -11,8 +11,9 @@ list(APPEND CMAKE_CXX_FLAGS "${CXX_FLAG} ${CXX_DBG} ${CXX_THD} ${CXX_OPT}")
 
 if (MSVC)
 elseif(APPLE)
-else()
+elseif(LINUX)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic -Wextra")
+else()
 endif()
 
 include_directories(${PROJECT_SOURCE_DIR}/include)
