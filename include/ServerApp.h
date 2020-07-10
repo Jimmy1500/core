@@ -26,18 +26,18 @@ class ServerApp : public ServerApplication
                     string user(getenv( config().getString("database.username", "DB_USERNAME").c_str() ));
                     string password(getenv( config().getString("database.password", "DB_PASSWORD").c_str() ));
 
-                    string connectionString(
-                            "host=127.0.0.1;port=" + port + ";user=" + user + ";password=" + password + ";db=" + dbname +
-                            ";compress=true;auto-reconnect=true;");
+                    stringstream conn;
+                    conn << "host=127.0.0.1;port=" << port << ";user=" << user << ";password=" << password << ";db=" << dbname << ";compress=true;auto-reconnect=true;";
+                    string connection = conn.str();
                     size_t minSessions = 1, maxSessions = 32, idleTime = 60;
 
                     Repository::initialize(
                             connector,
-                            connectionString,
+                            connection,
                             minSessions,
                             maxSessions,
                             idleTime);
-                    cout << "### Database loaded: [type=MySQL, credential=" << connectionString << "]" << endl;
+                    cout << "### Database loaded: [type=MySQL, credential=" << connection << "]" << endl;
                 }
             } catch (Poco::FileNotFoundException& e) {
                 cout << "### " << e.what() << " : application.properties, try: `make sync` in build directory to resolve" << endl;
