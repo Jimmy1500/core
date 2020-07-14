@@ -35,4 +35,4 @@ target_link_libraries(Main ${POCO_FOUNDATION} ${POCO_NET} ${POCO_JSON} ${POCO_UT
 # PHONY TARGETS
 add_custom_target(sync cp ../application.properties .)
 add_custom_target(run Main)
-add_custom_target(memcheck memcheck "./Main")
+add_custom_target(memcheck memcheck ./Main)
