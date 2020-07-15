@@ -17,8 +17,8 @@ else()
 endif()
 
 include_directories(${PROJECT_SOURCE_DIR}/include)
-include_directories("${PROJECT_SOURCE_DIR}")
 include_directories("/usr/local/include")
+include_directories("/usr/include/mysql")
 
 file(GLOB SOURCES "src/*.cpp")
 add_executable(Main ${SOURCES})
